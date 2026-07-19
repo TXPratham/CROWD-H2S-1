@@ -1,0 +1,13 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "bin_id": { "type": "string" },
+      "zone": { "type": "string" },
+      "fill_level": { "type": "number", "description": "Percentage 0 to 100" },
+      "timestamp": { "type": "string", "format": "date-time" }
+    },
+    "required": ["bin_id", "zone", "fill_level", "timestamp"]
+  }
+}

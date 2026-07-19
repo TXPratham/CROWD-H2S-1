@@ -1,0 +1,18 @@
+[
+  { "zone_id": "MetLife Stadium", "occupancy": 65000, "capacity": 82500, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "AT&T Stadium", "occupancy": 72000, "capacity": 80000, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Arrowhead Stadium", "occupancy": 50000, "capacity": 76416, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "NRG Stadium", "occupancy": 68000, "capacity": 72220, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Mercedes-Benz Stadium", "occupancy": 70000, "capacity": 71000, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "SoFi Stadium", "occupancy": 69000, "capacity": 70240, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Lincoln Financial Field", "occupancy": 40000, "capacity": 69796, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Lumen Field", "occupancy": 65000, "capacity": 69000, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Levi's Stadium", "occupancy": 60000, "capacity": 68500, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Gillette Stadium", "occupancy": 55000, "capacity": 65878, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Hard Rock Stadium", "occupancy": 64000, "capacity": 64767, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Estadio Azteca", "occupancy": 85000, "capacity": 87523, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Estadio BBVA", "occupancy": 50000, "capacity": 53500, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "Estadio Akron", "occupancy": 45000, "capacity": 48071, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "BC Place", "occupancy": 54000, "capacity": 54500, "timestamp": "2026-07-18T15:00:00Z" },
+  { "zone_id": "BMO Field", "occupancy": 45000, "capacity": 45000, "timestamp": "2026-07-18T15:00:00Z" }
+]

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stadium 2D Dashboard</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+        :root {
+            --bg-color: #0b0f19;
+            --panel-bg: rgba(18, 25, 43, 0.7);
+            --panel-border: rgba(59, 130, 246, 0.2);
+            --text-main: #f1f5f9;
+            --text-muted: #94a3b8;
+            --accent-blue: #3b82f6;
+            --status-green: #10b981;
+            --status-amber: #f59e0b;
+            --status-red: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(59, 130, 246, 0.15), transparent 25%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1), transparent 25%);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Rajdhani', sans-serif;
+            margin: 0;
+            text-transform: uppercase;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(11, 15, 25, 0.8);
+            border-bottom: 1px solid var(--panel-border);
+            backdrop-filter: blur(10px);
+        }
+        .header h1 {
+            font-size: 32px;
+            letter-spacing: 2px;
+            background: linear-gradient(90deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .header .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: var(--status-green);
+            box-shadow: 0 0 10px var(--status-green);
+            animation: pulse 2s infinite;
+        }
+
+        /* MAIN GRID */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 24px 40px;
+            flex: 1;
+        }
+
+        /* PANELS */
+        .panel {
+            background: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(12px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .panel:hover {
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        .panel-header {
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 12px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-header h2 {
+            font-size: 20px;
+            letter-spacing: 1px;
+            color: #60a5fa;
+        }
+
+        /* ZONE MAP */
+        .stadium-map {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(0,0,0,0.2);
+            border-radius: 50%;
+            border: 2px dashed rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: auto;
+        }
+        .pitch {
+            width: 50%;
+            height: 70%;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 8px;
+            position: absolute;
+        }
+        .zone {
+            position: absolute;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        .zone.north { top: 5%; left: 25%; width: 50%; height: 12%; }
+        .zone.south { bottom: 5%; left: 25%; width: 50%; height: 12%; }
+        .zone.east { right: 5%; top: 25%; width: 15%; height: 50%; }
+        .zone.west { left: 5%; top: 25%; width: 15%; height: 50%; }
+        
+        .zone-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; letter-spacing: 1px; }
+        .zone-occ { font-size: 12px; opacity: 0.8; margin-top: 4px; }
+
+        /* LISTS (AI Priority & Staffing) */
+        .list-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 8px;
+        }
+        .list-container::-webkit-scrollbar { width: 6px; }
+        .list-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 4px; }
+        .list-container::-webkit-scrollbar-thumb { background: var(--accent-blue); border-radius: 4px; }
+
+        .feed-item {
+            background: rgba(255,255,255,0.03);
+            border-left: 4px solid var(--accent-blue);
+            padding: 12px 16px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            animation: fadeIn 0.5s ease forwards;
+        }
+        .feed-item.critical { border-left-color: var(--status-red); background: linear-gradient(90deg, rgba(239, 68, 68, 0.1) 0%, transparent 100%); }
+        .feed-item.warning { border-left-color: var(--status-amber); background: linear-gradient(90deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%); }
+        .feed-item.normal { border-left-color: var(--status-green); }
+        
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+        }
+        .item-title { font-weight: 600; font-size: 14px; }
+        .item-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .badge-red { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+        .badge-amber { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
+        .badge-green { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+        .badge-blue { background: rgba(59, 130, 246, 0.2); color: #93c5fd; }
+        
+        .item-desc {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Nav links */
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+        .nav-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.2s;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent-blue);
+        }
+        
+        .empty-state {
+            padding: 20px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            font-style: italic;
+        }
+
+        .summary-box {
+            font-size: 13px;
+            padding: 10px 12px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+            margin-bottom: 16px;
+            color: #cbd5e1;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <h1>Stadium 2D Ops</h1>
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link active">2D Dashboard</a>
+            <a href="index.html" class="nav-link">3D Blueprint</a>
+        </div>
+        <div class="status">
+            <div class="status-dot" id="global-status-dot"></div>
+            <span id="global-status-text">SYSTEM ONLINE</span>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+        
+        <!-- MAP PANEL -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Live Zone Map</h2>
+                <div class="item-badge badge-blue">Telemetry Active</div>
+            </div>
+            
+            <div class="stadium-map">
+                <div class="pitch"></div>
+                <div class="zone north" id="zone-North Stand">
+                    <div class="zone-title">North Stand</div>
+                    <div class="zone-occ" id="occ-North Stand">-- / --</div>
+                </div>
+                <div class="zone south" id="zone-South Stand">
+                    <div class="zone-title">South Stand</div>
+                    <div class="zone-occ" id="occ-South Stand">-- / --</div>
+                </div>
+                <div class="zone east" id="zone-East Stand">
+                    <div class="zone-title">East Stand</div>
+                    <div class="zone-occ" id="occ-East Stand">-- / --</div>
+                </div>
+                <div class="zone west" id="zone-West Stand">
+                    <div class="zone-title">West Stand</div>
+                    <div class="zone-occ" id="occ-West Stand">-- / --</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- DUSTBINS PANEL -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Live Dustbin Status</h2>
+                <div class="item-badge badge-blue">Sensors Active</div>
+            </div>
+            <div class="list-container" id="dustbin-list">
+                <div class="empty-state">Awaiting bin data...</div>
+            </div>
+        </div>
+
+        <!-- AI PRIORITY FEED -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>AI Priority Feed</h2>
+                <div class="item-badge badge-amber" id="risk-badge">Awaiting Data</div>
+            </div>
+            <div class="summary-box" id="priority-summary">
+                Monitoring live bin telemetry...
+            </div>
+            <div class="list-container" id="priority-list">
+                <div class="empty-state">No priorities generated yet.</div>
+            </div>
+        </div>
+
+        <!-- STAFFING RECOMMENDATIONS -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2>Staffing Recommendations</h2>
+                <div class="item-badge badge-green">Operational Intel</div>
+            </div>
+            <div class="summary-box" id="staffing-summary">
+                Staffing levels nominal.
+            </div>
+            <div class="list-container" id="staffing-list">
+                <div class="empty-state">No reassignments active.</div>
+            </div>
+            
+            <div class="panel-header" style="margin-top: 20px;">
+                <h2>Crowd Redirects</h2>
+            </div>
+            <div class="list-container" id="redirects-list" style="flex: none; max-height: 150px;">
+                <div class="empty-state">No active redirects.</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        const firebaseConfig = {
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+            appId: import.meta.env.VITE_FIREBASE_APP_ID,
+            databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // State
+        let currentZones = {};
+        let currentBins = {};
+
+        // Listen for Zone updates to update Map
+        onValue(ref(db, 'stadium_data/zones'), (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                Object.values(val).forEach(z => {
+                    currentZones[z.zone_id] = z;
+                    updateZoneUI(z);
+                });
+            } else {
+                currentZones = {};
+                // Reset all zones to default empty state
+                document.querySelectorAll('.zone-occ').forEach(el => el.innerText = '-- / --');
+                document.querySelectorAll('.zone').forEach(el => {
+                    el.style.backgroundColor = 'rgba(255,255,255,0.05)';
+                    el.style.borderColor = 'rgba(255,255,255,0.1)';
+                });
+            }
+        });
+
+        // Listen for Bin updates
+        onValue(ref(db, 'stadium_data/bins'), (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                currentBins = val;
+                renderDustbins(val);
+            } else {
+                currentBins = {};
+                document.getElementById('dustbin-list').innerHTML = `<div class="empty-state">Awaiting bin data...</div>`;
+            }
+        });
+
+        // Listen for AI Recommendations
+        onValue(ref(db, 'stadium_data/ai_recommendations'), (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                renderAIRecommendations(data);
+            } else {
+                renderAIRecommendations({});
+            }
+        });
+
+        function updateZoneUI(zoneData) {
+            const zoneEl = document.getElementById(`zone-${zoneData.zone_id}`);
+            const occEl = document.getElementById(`occ-${zoneData.zone_id}`);
+            if (zoneEl && occEl) {
+                const cap = parseInt(zoneData.capacity) || 0;
+                const occ = parseInt(zoneData.occupancy) || 0;
+                const pct = cap > 0 ? (occ / cap) * 100 : 0;
+                
+                occEl.innerText = `${occ.toLocaleString()} / ${cap.toLocaleString()} (${pct.toFixed(0)}%)`;
+                
+                // Color coding
+                if (pct >= 90) {
+                    zoneEl.style.backgroundColor = 'rgba(239, 68, 68, 0.4)';
+                    zoneEl.style.borderColor = 'rgba(239, 68, 68, 0.8)';
+                } else if (pct >= 75) {
+                    zoneEl.style.backgroundColor = 'rgba(245, 158, 11, 0.4)';
+                    zoneEl.style.borderColor = 'rgba(245, 158, 11, 0.8)';
+                } else {
+                    zoneEl.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                    zoneEl.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                }
+            }
+        }
+
+        function renderDustbins(binsObj) {
+            const binList = document.getElementById('dustbin-list');
+            const bins = Object.values(binsObj);
+            
+            if(bins.length > 0) {
+                binList.innerHTML = bins.map(b => {
+                    const fill = typeof b.fill_level === 'number' ? b.fill_level : (parseFloat(b.fill_level) || 0);
+                    let status = 'normal';
+                    let badgeClass = 'badge-green';
+                    if(fill >= 80) { status = 'critical'; badgeClass = 'badge-red'; }
+                    else if(fill >= 60) { status = 'warning'; badgeClass = 'badge-amber'; }
+                    
+                    return `
+                    <div class="feed-item ${status}">
+                        <div class="item-header">
+                            <span class="item-title">${b.bin_id} (${b.zone || b.zone_id || 'Unknown'})</span>
+                            <span class="item-badge ${badgeClass}">${fill.toFixed(1)}%</span>
+                        </div>
+                    </div>
+                `;}).join('');
+            } else {
+                binList.innerHTML = `<div class="empty-state">No active bins.</div>`;
+            }
+        }
+
+        function renderAIRecommendations(data) {
+            const prio = data.bin_priority || {};
+            const staff = data.staffing || {};
+            
+            // Risk Badge
+            const riskBadge = document.getElementById('risk-badge');
+            const riskLevel = prio.risk_level || 'UNKNOWN';
+            riskBadge.innerText = riskLevel;
+            riskBadge.className = 'item-badge';
+            if(riskLevel === 'CRITICAL') riskBadge.classList.add('badge-red');
+            else if(riskLevel === 'HIGH' || riskLevel === 'MEDIUM') riskBadge.classList.add('badge-amber');
+            else if(riskLevel === 'LOW') riskBadge.classList.add('badge-green');
+            else riskBadge.classList.add('badge-blue');
+
+            // Summaries
+            document.getElementById('priority-summary').innerText = prio.summary || 'All nominal.';
+            document.getElementById('staffing-summary').innerText = staff.summary || 'Staffing levels optimal.';
+
+            // Priority Feed
+            const prioList = document.getElementById('priority-list');
+            const prioItems = (prio.priority_order || []).filter(p => p.status !== 'NORMAL');
+            if(prioItems.length > 0) {
+                prioList.innerHTML = prioItems.map(p => {
+                    const fillStr = typeof p.fill_level === 'number' ? p.fill_level.toFixed(1) : (parseFloat(p.fill_level) || 0).toFixed(1);
+                    return `
+                    <div class="feed-item ${p.status ? p.status.toLowerCase() : 'normal'}">
+                        <div class="item-header">
+                            <span class="item-title">${p.bin_id || 'Unknown'} (${p.zone || 'Unknown'})</span>
+                            <span class="item-badge ${p.status === 'CRITICAL' ? 'badge-red' : 'badge-amber'}">${fillStr}%</span>
+                        </div>
+                        <div class="item-desc">${p.reasoning || 'No details.'}</div>
+                    </div>
+                `;}).join('');
+            } else {
+                prioList.innerHTML = `<div class="empty-state">No priority actions required at this time.</div>`;
+            }
+
+            // Staffing Reassignments
+            const staffList = document.getElementById('staffing-list');
+            const reass = staff.reassignments || [];
+            if(reass.length > 0) {
+                staffList.innerHTML = reass.map(r => `
+                    <div class="feed-item normal" style="border-left-color: #3b82f6;">
+                        <div class="item-header">
+                            <span class="item-title">${r.staff_name}</span>
+                            <span class="item-badge badge-blue">${r.from_zone} &rarr; ${r.to_zone}</span>
+                        </div>
+                        <div class="item-desc"><strong>Task:</strong> ${r.task?.replace('_', ' ')} <br> ${r.reasoning}</div>
+                    </div>
+                `).join('');
+            } else {
+                staffList.innerHTML = `<div class="empty-state">No reassignments active.</div>`;
+            }
+
+            // Crowd Redirects
+            const redList = document.getElementById('redirects-list');
+            const redirects = staff.crowd_redirects || [];
+            if(redirects.length > 0) {
+                redList.innerHTML = redirects.map(r => `
+                    <div class="feed-item warning">
+                        <div class="item-header">
+                            <span class="item-title">${r.from_zone} &rarr; ${r.to_zone}</span>
+                        </div>
+                        <div class="item-desc">${r.reasoning}</div>
+                    </div>
+                `).join('');
+            } else {
+                redList.innerHTML = `<div class="empty-state">No active redirects.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>

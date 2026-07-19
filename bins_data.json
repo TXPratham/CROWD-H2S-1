@@ -1,0 +1,352 @@
+[
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 79.4,
+        "timestamp": "2026-07-18T21:00:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 67.6,
+        "timestamp": "2026-07-18T21:05:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 64.7,
+        "timestamp": "2026-07-18T21:10:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 19.6,
+        "timestamp": "2026-07-18T21:15:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 95.7,
+        "timestamp": "2026-07-18T21:20:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 75.3,
+        "timestamp": "2026-07-18T21:25:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 13.7,
+        "timestamp": "2026-07-18T21:30:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 46.4,
+        "timestamp": "2026-07-18T21:35:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 44.0,
+        "timestamp": "2026-07-18T21:40:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 26.8,
+        "timestamp": "2026-07-18T21:45:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 28.9,
+        "timestamp": "2026-07-18T21:50:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 68.2,
+        "timestamp": "2026-07-18T21:55:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 49.5,
+        "timestamp": "2026-07-18T22:00:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 12.6,
+        "timestamp": "2026-07-18T22:05:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 29.1,
+        "timestamp": "2026-07-18T22:10:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 26.1,
+        "timestamp": "2026-07-18T22:15:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 66.7,
+        "timestamp": "2026-07-18T22:20:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-ATT1",
+        "zone": "AT&T Stadium",
+        "fill_level": 47.0,
+        "timestamp": "2026-07-18T22:25:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 95.6,
+        "timestamp": "2026-07-18T22:30:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-ATT1",
+        "zone": "AT&T Stadium",
+        "fill_level": 93.5,
+        "timestamp": "2026-07-18T22:35:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 70.5,
+        "timestamp": "2026-07-18T22:40:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 39.2,
+        "timestamp": "2026-07-18T22:45:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 88.6,
+        "timestamp": "2026-07-18T22:50:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 73.9,
+        "timestamp": "2026-07-18T22:55:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 21.1,
+        "timestamp": "2026-07-18T23:00:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 21.4,
+        "timestamp": "2026-07-18T23:05:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 86.9,
+        "timestamp": "2026-07-18T23:10:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-ATT1",
+        "zone": "AT&T Stadium",
+        "fill_level": 71.3,
+        "timestamp": "2026-07-18T23:15:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 98.6,
+        "timestamp": "2026-07-18T23:20:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 33.6,
+        "timestamp": "2026-07-18T23:25:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 52.1,
+        "timestamp": "2026-07-18T23:30:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 65.0,
+        "timestamp": "2026-07-18T23:35:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 76.9,
+        "timestamp": "2026-07-18T23:40:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 22.5,
+        "timestamp": "2026-07-18T23:45:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 82.0,
+        "timestamp": "2026-07-18T23:50:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-ATT1",
+        "zone": "AT&T Stadium",
+        "fill_level": 95.9,
+        "timestamp": "2026-07-18T23:55:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 65.0,
+        "timestamp": "2026-07-19T00:00:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 14.8,
+        "timestamp": "2026-07-19T00:05:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 12.2,
+        "timestamp": "2026-07-19T00:10:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 81.0,
+        "timestamp": "2026-07-19T00:15:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 97.2,
+        "timestamp": "2026-07-19T00:20:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 28.4,
+        "timestamp": "2026-07-19T00:25:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 55.1,
+        "timestamp": "2026-07-19T00:30:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BCP1",
+        "zone": "BC Place",
+        "fill_level": 61.4,
+        "timestamp": "2026-07-19T00:35:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "bin_id": "BIN-AZT1",
+        "zone": "Estadio Azteca",
+        "fill_level": 73.0,
+        "timestamp": "2026-07-19T00:40:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-SOF1",
+        "zone": "SoFi Stadium",
+        "fill_level": 86.7,
+        "timestamp": "2026-07-19T00:45:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 73.1,
+        "timestamp": "2026-07-19T00:50:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 59.1,
+        "timestamp": "2026-07-19T00:55:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "bin_id": "BIN-MET1",
+        "zone": "MetLife Stadium",
+        "fill_level": 88.9,
+        "timestamp": "2026-07-19T01:00:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "bin_id": "BIN-BMO1",
+        "zone": "BMO Field",
+        "fill_level": 96.8,
+        "timestamp": "2026-07-19T01:05:46.107941",
+        "sustainability_score": "Moderate"
+    }
+]

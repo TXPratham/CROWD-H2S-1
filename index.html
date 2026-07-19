@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Stadium Blueprint</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap');
+        
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: radial-gradient(circle at center, #f5f9ff 0%, #dbe8f7 100%);
+            font-family: 'Rajdhani', sans-serif;
+            color: #1c4587;
+            user-select: none;
+        }
+        #canvas-container {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        
+        /* HUD UI */
+        .hud {
+            position: absolute;
+            z-index: 10;
+            pointer-events: none;
+        }
+        
+        .header {
+            top: 40px;
+            left: 40px;
+            animation: slideIn 1s ease-out forwards;
+            opacity: 0;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 36px;
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            border-left: 5px solid #1c4587;
+            padding-left: 20px;
+            line-height: 1;
+        }
+        .header p {
+            margin: 8px 0 0 25px;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 3px;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+        
+        .info-panel {
+            bottom: 40px;
+            left: 40px;
+            background: rgba(219, 232, 247, 0.6);
+            border: 1px solid rgba(28, 69, 135, 0.2);
+            border-left: 4px solid #1c4587;
+            padding: 20px 25px;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 1.5s ease-out 0.5s forwards;
+            opacity: 0;
+        }
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            width: 220px;
+            margin-bottom: 12px;
+            font-size: 15px;
+            border-bottom: 1px dashed rgba(28, 69, 135, 0.2);
+            padding-bottom: 4px;
+        }
+        .info-row:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .info-label {
+            opacity: 0.7;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .info-value {
+            font-weight: 700;
+            color: #113366;
+        }
+        
+        .data-panel {
+            top: 220px;
+            left: 40px;
+            background: rgba(219, 232, 247, 0.6);
+            border: 1px solid rgba(28, 69, 135, 0.2);
+            border-left: 4px solid #1c4587;
+            padding: 15px 20px;
+            backdrop-filter: blur(8px);
+            animation: fadeIn 1.5s ease-out 0.6s forwards;
+            opacity: 0;
+            width: 250px;
+        }
+        .data-panel h3 {
+            margin: 0 0 12px 0;
+            font-size: 16px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border-bottom: 1px solid rgba(28, 69, 135, 0.2);
+            padding-bottom: 6px;
+        }
+        .data-section {
+            margin-bottom: 12px;
+        }
+        .data-section h4 {
+            margin: 0 0 6px 0;
+            font-size: 14px;
+            color: #1c4587;
+            opacity: 0.8;
+            text-transform: uppercase;
+        }
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .data-val {
+            color: #113366;
+            font-weight: 700;
+        }
+        .upload-section {
+            margin-top: 15px;
+            border-top: 1px dashed rgba(28, 69, 135, 0.3);
+            padding-top: 12px;
+            text-align: center;
+            pointer-events: auto;
+        }
+        .upload-btn {
+            display: inline-block;
+            background: rgba(28, 69, 135, 0.8);
+            color: white;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 2px;
+            letter-spacing: 1px;
+            transition: background 0.2s;
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+            font-weight: 600;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .upload-btn:hover {
+            background: #113366;
+        }
+        
+        .controls-hint {
+            bottom: 40px;
+            right: 40px;
+            text-align: right;
+            animation: fadeIn 1.5s ease-out 0.8s forwards;
+            opacity: 0;
+        }
+        .control-item {
+            margin-bottom: 12px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        .key {
+            display: inline-block;
+            border: 1px solid rgba(28, 69, 135, 0.4);
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            min-width: 80px;
+            text-align: center;
+        }
+        
+
+        
+        .llm-panel {
+            top: 40px;
+            right: 40px;
+            background: rgba(219, 232, 247, 0.85);
+            border: 1px solid rgba(28, 69, 135, 0.3);
+            border-right: 4px solid #d32f2f;
+            padding: 15px 20px;
+            backdrop-filter: blur(10px);
+            animation: fadeIn 1.5s ease-out 0.6s forwards;
+            opacity: 0;
+            width: 300px;
+            display: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            pointer-events: auto;
+        }
+        .llm-panel.active {
+            display: block;
+        }
+        .llm-panel h3 {
+            margin: 0 0 10px 0;
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: #d32f2f;
+            border-bottom: 1px solid rgba(211, 47, 47, 0.3);
+            padding-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .llm-content {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #113366;
+            font-weight: 500;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .crosshair {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 50px;
+            z-index: 5;
+            opacity: 0.2;
+            pointer-events: none;
+        }
+        .crosshair::before, .crosshair::after {
+            content: '';
+            position: absolute;
+            background: #1c4587;
+        }
+        .crosshair::before { top: 50%; left: 0; width: 100%; height: 1px; }
+        .crosshair::after { top: 0; left: 50%; width: 1px; height: 100%; }
+        
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid #1c4587;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(-40px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Scanline effect over everything */
+        .scanlines {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0) 50%, rgba(28, 69, 135, 0.05) 50%, rgba(28, 69, 135, 0.05));
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 20;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    <div class="crosshair"><div class="center-circle"></div></div>
+    
+    <div class="hud header">
+        <h1>Stadium 3D</h1>
+        <p>Architectural Blueprint Mode</p>
+        <div style="margin-top: 15px; margin-left: 25px; display: flex; align-items: center; gap: 15px; pointer-events: auto;">
+            <a href="dashboard.html" style="color: #1c4587; text-decoration: none; font-weight: 600; font-size: 14px; background: rgba(255,255,255,0.6); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(28, 69, 135, 0.4);">Switch to 2D Dashboard &rarr;</a>
+            <div style="display: flex; align-items: center; gap: 6px; font-weight: 600; font-size: 13px; letter-spacing: 1px; color: #1c4587; background: rgba(255,255,255,0.6); padding: 5px 12px; border-radius: 4px; border: 1px solid rgba(28, 69, 135, 0.4);">
+                <span id="status-dot" style="width: 8px; height: 8px; border-radius: 50%; background-color: #2e7d32; display: inline-block;"></span>
+                <span id="status-val">ONLINE</span>
+            </div>
+        </div>
+    </div>
+    
+
+
+    <div class="hud data-panel">
+        <h3>Live Data Stream</h3>
+        <div class="data-section">
+            <h4>Waste Bins</h4>
+            <div id="bins-data"></div>
+        </div>
+        <div class="data-section">
+            <h4>Zone Occupancy</h4>
+            <div id="zones-data"></div>
+        </div>
+    </div>
+
+    <div class="hud controls-hint">
+        <div class="control-item">ROTATE <span class="key">LEFT CLICK</span></div>
+        <div class="control-item">PAN <span class="key">RIGHT CLICK</span></div>
+        <div class="control-item">ZOOM <span class="key">SCROLL</span></div>
+    </div>
+
+    <div class="hud llm-panel" id="llm-panel">
+        <h3>
+            <span>AI Recommendations</span>
+            <button onclick="document.getElementById('llm-panel').classList.remove('active')" style="background:none;border:none;color:#d32f2f;cursor:pointer;font-weight:bold;font-size:16px;">✕</button>
+        </h3>
+        <div class="llm-content" id="llm-response-text">
+            Waiting for critical alerts...
+        </div>
+
+    </div>
+
+    <div id="canvas-container"></div>
+
+    <!-- Include Three.js and OrbitControls -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+        // Setup Scene, Camera, Renderer
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        
+        // Add subtle fog to blend the horizon
+        scene.fog = new THREE.FogExp2(0xdbe8f7, 0.003);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 2000);
+        // Position camera to look down at an angle
+        camera.position.set(-180, 120, 180);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Cap pixel ratio for performance
+        container.appendChild(renderer.domElement);
+
+        // Interaction Controls
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.maxPolarAngle = Math.PI / 2 - 0.05; // Prevent going fully below ground
+        controls.minDistance = 50;
+        controls.maxDistance = 800;
+
+        // Lighting for the transparent shiny material
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+        scene.add(ambientLight);
+        
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        dirLight.position.set(200, 300, 100);
+        scene.add(dirLight);
+
+        // Materials: Blueprint aesthetic
+        const bpBlueDark = 0x1c4587;   // Dark ink
+        const bpBlueAccent = 0x3d85c6; // Accent ink
+        const bpSurface = 0xffffff;    // Surface fill
+
+        // Transparent glossy surface
+        const solidMat = new THREE.MeshPhongMaterial({
+            color: bpSurface,
+            transparent: true,
+            opacity: 0.15,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            shininess: 90,
+            specular: bpBlueAccent,
+            blending: THREE.NormalBlending
+        });
+
+        // Thin wireframe line
+        const lineMat = new THREE.LineBasicMaterial({
+            color: bpBlueDark,
+            linewidth: 1,
+            transparent: true,
+            opacity: 0.4
+        });
+        
+        // Emphasized line (thicker appearance or darker opacity)
+        const lineMatAccent = new THREE.LineBasicMaterial({
+            color: bpBlueDark,
+            linewidth: 1.5,
+            transparent: true,
+            opacity: 0.8
+        });
+
+        // Helper function to create combined mesh+wireframe
+        function createBlueprintObj(geometry, accent = false) {
+            const group = new THREE.Group();
+            
+            // Solid transparent surface
+            const mesh = new THREE.Mesh(geometry, solidMat);
+            group.add(mesh);
+            
+            // Wireframe lines
+            const edges = new THREE.WireframeGeometry(geometry);
+            const line = new THREE.LineSegments(edges, accent ? lineMatAccent : lineMat);
+            group.add(line);
+            
+            return group;
+        }
+
+        // --- Build Stadium ---
+        const stadiumGroup = new THREE.Group();
+
+        // 1. Pitch Surface (Grid subdivided)
+        // Standard pitch 105m x 68m
+        const pitchGeom = new THREE.PlaneGeometry(105, 68, 20, 13); 
+        pitchGeom.rotateX(-Math.PI / 2);
+        
+        const pitchMat = new THREE.MeshPhongMaterial({
+            color: 0x0a224a, // Dark blue pitch
+            side: THREE.DoubleSide,
+            shininess: 20
+        });
+        const pitchMesh = new THREE.Mesh(pitchGeom, pitchMat);
+        const pitchEdges = new THREE.WireframeGeometry(pitchGeom);
+        const pitchLine = new THREE.LineSegments(pitchEdges, new THREE.LineBasicMaterial({color: 0x3d85c6, transparent: true, opacity: 0.3}));
+        const pitchGroup = new THREE.Group();
+        pitchGroup.add(pitchMesh);
+        pitchGroup.add(pitchLine);
+        pitchGroup.position.y = 0.1;
+        stadiumGroup.add(pitchGroup);
+
+        // 2. Football Pitch Markings
+        const markingsGroup = new THREE.Group();
+        const markMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2, opacity: 0.8, transparent: true });
+        
+        // Pitch outline
+        const outlineGeom = new THREE.PlaneGeometry(105, 68);
+        const outlineEdges = new THREE.EdgesGeometry(outlineGeom);
+        const outline = new THREE.LineSegments(outlineEdges, markMat);
+        outline.rotation.x = -Math.PI / 2;
+        outline.position.y = 0.2;
+        markingsGroup.add(outline);
+
+        // Center circle (radius 9.15m)
+        const circleGeom = new THREE.CircleGeometry(9.15, 64);
+        const circleEdges = new THREE.EdgesGeometry(circleGeom);
+        const centerCircle = new THREE.LineSegments(circleEdges, markMat);
+        centerCircle.rotation.x = -Math.PI / 2;
+        centerCircle.position.y = 0.2;
+        markingsGroup.add(centerCircle);
+        
+        // Halfway line
+        const centerLineGeom = new THREE.PlaneGeometry(0, 68);
+        const centerLineEdges = new THREE.EdgesGeometry(centerLineGeom);
+        const centerLine = new THREE.LineSegments(centerLineEdges, markMat);
+        centerLine.rotation.x = -Math.PI / 2;
+        centerLine.position.y = 0.2;
+        markingsGroup.add(centerLine);
+
+        // Penalty boxes (16.5m x 40.3m)
+        const boxGeom = new THREE.PlaneGeometry(16.5, 40.3);
+        const boxEdges = new THREE.EdgesGeometry(boxGeom);
+        const box1 = new THREE.LineSegments(boxEdges, markMat);
+        box1.rotation.x = -Math.PI / 2;
+        box1.position.set(-52.5 + 16.5/2, 0.2, 0);
+        markingsGroup.add(box1);
+
+        const box2 = new THREE.LineSegments(boxEdges, markMat);
+        box2.rotation.x = -Math.PI / 2;
+        box2.position.set(52.5 - 16.5/2, 0.2, 0);
+        markingsGroup.add(box2);
+
+        // Goal areas (5.5m x 18.32m)
+        const goalAreaGeom = new THREE.PlaneGeometry(5.5, 18.32);
+        const goalAreaEdges = new THREE.EdgesGeometry(goalAreaGeom);
+        const ga1 = new THREE.LineSegments(goalAreaEdges, markMat);
+        ga1.rotation.x = -Math.PI / 2;
+        ga1.position.set(-52.5 + 5.5/2, 0.2, 0);
+        markingsGroup.add(ga1);
+        
+        const ga2 = new THREE.LineSegments(goalAreaEdges, markMat);
+        ga2.rotation.x = -Math.PI / 2;
+        ga2.position.set(52.5 - 5.5/2, 0.2, 0);
+        markingsGroup.add(ga2);
+
+        // Goal posts (3D boxes)
+        const goalGeom = new THREE.BoxGeometry(2, 2.44, 7.32);
+        const goalEdges3D = new THREE.WireframeGeometry(goalGeom);
+        const goal1 = new THREE.LineSegments(goalEdges3D, markMat);
+        goal1.position.set(-52.5 - 1, 1.22, 0);
+        markingsGroup.add(goal1);
+        
+        const goal2 = new THREE.LineSegments(goalEdges3D, markMat);
+        goal2.position.set(52.5 + 1, 1.22, 0);
+        markingsGroup.add(goal2);
+        
+        stadiumGroup.add(markingsGroup);
+
+        // 3. Continuous Stadium Stands & Roof
+        const zoneMeshes = {};
+        
+        const pitchW = 105;
+        const pitchH = 68;
+        const margin = 12; // distance from pitch to stands
+        
+        // Solid material that we will color based on occupancy
+        const standMat = new THREE.MeshPhongMaterial({
+            color: bpSurface,
+            transparent: true,
+            opacity: 0.35,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            shininess: 90
+        });
+
+        // Roof material
+        const roofMat = new THREE.MeshPhongMaterial({
+            color: bpSurface,
+            transparent: true,
+            opacity: 0.15,
+            side: THREE.DoubleSide,
+            depthWrite: false,
+            shininess: 120
+        });
+
+        function registerZoneMesh(zoneId, mesh) {
+            mesh.userData.zoneId = zoneId;
+            if(!zoneMeshes[zoneId]) zoneMeshes[zoneId] = [];
+            zoneMeshes[zoneId].push(mesh);
+        }
+
+        // Profile for the 3-tier rectangular stadium
+        function getStandPoints(offsetX) {
+            const pts = [];
+            let currX = offsetX;
+            let currY = 0;
+            pts.push(new THREE.Vector2(currX, currY));
+            
+            // Tier 1 (10 steps)
+            let steps = 10;
+            let sD = 15 / steps;
+            let sH = 8 / steps;
+            for(let i=0; i<steps; i++) {
+                currY += sH; pts.push(new THREE.Vector2(currX, currY));
+                currX += sD; pts.push(new THREE.Vector2(currX, currY));
+            }
+            // Walkway 1
+            currX += 4; pts.push(new THREE.Vector2(currX, currY));
+            
+            // Tier 2 (12 steps)
+            steps = 12;
+            sD = 18 / steps;
+            sH = 12 / steps;
+            for(let i=0; i<steps; i++) {
+                currY += sH; pts.push(new THREE.Vector2(currX, currY));
+                currX += sD; pts.push(new THREE.Vector2(currX, currY));
+            }
+            // Walkway 2
+            currX += 4; pts.push(new THREE.Vector2(currX, currY));
+
+            // Tier 3 (12 steps)
+            steps = 12;
+            sD = 18 / steps;
+            sH = 14 / steps;
+            for(let i=0; i<steps; i++) {
+                currY += sH; pts.push(new THREE.Vector2(currX, currY));
+                currX += sD; pts.push(new THREE.Vector2(currX, currY));
+            }
+
+            // Facade Drop (with fake floors to create horizontal rings)
+            let floorHeights = [26, 18, 9, 0];
+            for (let h of floorHeights) {
+                pts.push(new THREE.Vector2(currX, h));
+                pts.push(new THREE.Vector2(currX - 0.2, h)); // tiny indent for wireframe line
+                pts.push(new THREE.Vector2(currX, h));
+            }
+            pts.push(new THREE.Vector2(offsetX, 0));
+            
+            return pts;
+        }
+
+        // Profile for the massive overhanging roof truss
+        function getRoofPoints(offsetX) {
+            const pts = [];
+            const roofInnerX = offsetX - 2;
+            const roofOuterX = offsetX + 59 + 2; 
+            const roofInnerY = 38;
+            const roofOuterY = 42;
+            const thickness = 1.5;
+
+            pts.push(new THREE.Vector2(roofInnerX, roofInnerY));
+            pts.push(new THREE.Vector2(roofOuterX, roofOuterY));
+            pts.push(new THREE.Vector2(roofOuterX, roofOuterY + thickness));
+            pts.push(new THREE.Vector2(roofInnerX, roofInnerY + thickness));
+            pts.push(new THREE.Vector2(roofInnerX, roofInnerY));
+            
+            return pts;
+        }
+
+        function createStraightSegment(length, zoneId, material, wireframeMat, getPointsFn) {
+            const pts = getPointsFn(0);
+            const shape = new THREE.Shape();
+            shape.moveTo(pts[0].x, pts[0].y);
+            for(let i=1; i<pts.length; i++) shape.lineTo(pts[i].x, pts[i].y);
+            
+            const extrudeSettings = { depth: length, bevelEnabled: false, curveSegments: 1 };
+            const geom = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+            geom.translate(0, 0, -length/2);
+            
+            const mesh = new THREE.Mesh(geom, material.clone());
+            if(zoneId) registerZoneMesh(zoneId, mesh);
+            
+            const edges = new THREE.WireframeGeometry(geom);
+            const line = new THREE.LineSegments(edges, wireframeMat);
+            
+            const group = new THREE.Group();
+            group.add(mesh);
+            group.add(line);
+            return group;
+        }
+
+        function createCornerSegment(phiStart, zoneId, material, wireframeMat, getPointsFn) {
+            const pts = getPointsFn(margin);
+            const geom = new THREE.LatheGeometry(pts, 24, phiStart, Math.PI/2);
+            
+            const mesh = new THREE.Mesh(geom, material.clone());
+            if(zoneId) registerZoneMesh(zoneId, mesh);
+            
+            const edges = new THREE.WireframeGeometry(geom);
+            const line = new THREE.LineSegments(edges, wireframeMat);
+            
+            const group = new THREE.Group();
+            group.add(mesh);
+            group.add(line);
+            return group;
+        }
+
+        // --- Build Main Structure ---
+        
+        // East
+        const eastStand = createStraightSegment(pitchH, 'East Stand', standMat, lineMat, getStandPoints);
+        eastStand.position.set(pitchW/2 + margin, 0, 0);
+        stadiumGroup.add(eastStand);
+        const eastRoof = createStraightSegment(pitchH, null, roofMat, lineMatAccent, getRoofPoints);
+        eastRoof.position.set(pitchW/2 + margin, 0, 0);
+        stadiumGroup.add(eastRoof);
+
+        // West
+        const westStand = createStraightSegment(pitchH, 'West Stand', standMat, lineMat, getStandPoints);
+        westStand.rotation.y = Math.PI;
+        westStand.position.set(-(pitchW/2 + margin), 0, 0);
+        stadiumGroup.add(westStand);
+        const westRoof = createStraightSegment(pitchH, null, roofMat, lineMatAccent, getRoofPoints);
+        westRoof.rotation.y = Math.PI;
+        westRoof.position.set(-(pitchW/2 + margin), 0, 0);
+        stadiumGroup.add(westRoof);
+
+        // North
+        const northStand = createStraightSegment(pitchW, 'North Stand', standMat, lineMat, getStandPoints);
+        northStand.rotation.y = Math.PI / 2;
+        northStand.position.set(0, 0, -(pitchH/2 + margin));
+        stadiumGroup.add(northStand);
+        const northRoof = createStraightSegment(pitchW, null, roofMat, lineMatAccent, getRoofPoints);
+        northRoof.rotation.y = Math.PI / 2;
+        northRoof.position.set(0, 0, -(pitchH/2 + margin));
+        stadiumGroup.add(northRoof);
+
+        // South
+        const southStand = createStraightSegment(pitchW, 'South Stand', standMat, lineMat, getStandPoints);
+        southStand.rotation.y = -Math.PI / 2;
+        southStand.position.set(0, 0, pitchH/2 + margin);
+        stadiumGroup.add(southStand);
+        const southRoof = createStraightSegment(pitchW, null, roofMat, lineMatAccent, getRoofPoints);
+        southRoof.rotation.y = -Math.PI / 2;
+        southRoof.position.set(0, 0, pitchH/2 + margin);
+        stadiumGroup.add(southRoof);
+
+        // Corners
+        const corners = [
+            { phi: Math.PI/2, x: pitchW/2, z: -pitchH/2, zone: 'East Stand' },   // NE Corner
+            { phi: Math.PI, x: -pitchW/2, z: -pitchH/2, zone: 'West Stand' },     // NW Corner
+            { phi: -Math.PI/2, x: -pitchW/2, z: pitchH/2, zone: 'West Stand' },    // SW Corner
+            { phi: 0, x: pitchW/2, z: pitchH/2, zone: 'East Stand' }              // SE Corner
+        ];
+
+        corners.forEach(c => {
+            const cStand = createCornerSegment(c.phi, c.zone, standMat, lineMat, getStandPoints);
+            cStand.position.set(c.x, 0, c.z);
+            stadiumGroup.add(cStand);
+
+            const cRoof = createCornerSegment(c.phi, null, roofMat, lineMatAccent, getRoofPoints);
+            cRoof.position.set(c.x, 0, c.z);
+            stadiumGroup.add(cRoof);
+        });
+
+        // 4. Waste Bins in 3D Space
+        const binGroup = new THREE.Group();
+        const binGeom = new THREE.CylinderGeometry(1.2, 1.2, 3.5, 16);
+        const bins3D = {};
+
+        function addBin(id, x, z) {
+            const mat = new THREE.MeshPhongMaterial({
+                color: 0x2e7d32, // default green
+                emissive: 0x2e7d32,
+                emissiveIntensity: 0.2, // will pulse
+                transparent: true,
+                opacity: 0.85
+            });
+            const mesh = new THREE.Mesh(binGeom, mat);
+            mesh.position.set(x, 1.75, z);
+            
+            // Add wireframe
+            const edges = new THREE.WireframeGeometry(binGeom);
+            const line = new THREE.LineSegments(edges, lineMatAccent);
+            mesh.add(line);
+            
+            binGroup.add(mesh);
+            bins3D[id] = mesh;
+        }
+
+        addBin('BIN-E1', pitchH/2 + margin + 15, -30);
+        addBin('BIN-E2', pitchH/2 + margin + 15, 30);
+        addBin('BIN-W1', -(pitchH/2 + margin + 15), -30);
+        addBin('BIN-W2', -(pitchH/2 + margin + 15), 30);
+        addBin('BIN-N1', -20, -(pitchW/2 + margin + 15));
+        addBin('BIN-S1', 20, pitchW/2 + margin + 15);
+        stadiumGroup.add(binGroup);
+
+        // 5. Environment Grid (Engineering paper background grid)
+        const gridHelper = new THREE.GridHelper(800, 80, bpBlueDark, bpBlueDark);
+        gridHelper.material.opacity = 0.15;
+        gridHelper.material.transparent = true;
+        gridHelper.position.y = -0.1;
+        scene.add(gridHelper);
+
+        // Add concentric topographic lines
+        const topoGroup = new THREE.Group();
+        const topoMat = new THREE.LineBasicMaterial({ color: bpBlueDark, opacity: 0.1, transparent: true });
+        for(let i=1; i<=5; i++) {
+            const r = 90 + (i * 20);
+            const cGeom = new THREE.BufferGeometry();
+            const pts = [];
+            for(let j=0; j<=64; j++) {
+                const theta = (j / 64) * Math.PI * 2;
+                pts.push(new THREE.Vector3(Math.cos(theta) * r, 0, Math.sin(theta) * r));
+            }
+            cGeom.setFromPoints(pts);
+            const cLine = new THREE.Line(cGeom, topoMat);
+            cLine.scale.set(1.45, 1, 1);
+            cLine.position.y = -0.05;
+            topoGroup.add(cLine);
+        }
+        scene.add(topoGroup);
+
+        scene.add(stadiumGroup);
+
+        // 6. Dynamic Scanning Particles (Tech effect)
+        const particlesGeom = new THREE.BufferGeometry();
+        const particlesCount = 300;
+        const posArray = new Float32Array(particlesCount * 3);
+        
+        for(let i=0; i<particlesCount; i++){
+            const theta = Math.random() * Math.PI * 2;
+            const r = 80 + Math.random() * 45;
+            // Elliptical distribution
+            const x = Math.cos(theta) * r * 1.45;
+            const z = Math.sin(theta) * r;
+            const y = Math.random() * 35; // Distribute vertically through stands/roof
+            
+            posArray[i*3] = x;
+            posArray[i*3+1] = y;
+            posArray[i*3+2] = z;
+        }
+        
+        particlesGeom.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+        const particleMat = new THREE.PointsMaterial({
+            size: 1.5,
+            color: bpBlueAccent,
+            transparent: true,
+            opacity: 0.8,
+            blending: THREE.AdditiveBlending
+        });
+        
+        const particles = new THREE.Points(particlesGeom, particleMat);
+        stadiumGroup.add(particles);
+
+        // Animation Loop
+        const clock = new THREE.Clock();
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update controls (required for damping)
+            controls.update();
+
+            const elapsedTime = clock.getElapsedTime();
+            
+            // Very slow rotation of the stadium for a dynamic presentation feel
+            stadiumGroup.rotation.y = Math.sin(elapsedTime * 0.05) * 0.05;
+
+            // Animate particles (pulsing opacity)
+            particles.material.opacity = 0.4 + Math.sin(elapsedTime * 2.5) * 0.3;
+
+            // Very slow blinking/pulsing effect for dustbins
+            const binPulse = (Math.sin(elapsedTime * 1.5) + 1) / 2; // 0 to 1
+            for (let id in bins3D) {
+                if (bins3D[id] && bins3D[id].material) {
+                    bins3D[id].material.emissiveIntensity = 0.2 + (binPulse * 0.6);
+                }
+            }
+
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle Window Resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+
+
+        // Firebase Configuration using Vite environment variables
+        const firebaseConfig = {
+            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+            appId: import.meta.env.VITE_FIREBASE_APP_ID,
+            databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // --- Synthetic Data Generator & Pipeline ---
+        let dataState = {
+            bins: [
+                { bin_id: 'BIN-E1', zone: 'East Stand', fill_level: 10 },
+                { bin_id: 'BIN-E2', zone: 'East Stand', fill_level: 25 },
+                { bin_id: 'BIN-W1', zone: 'West Stand', fill_level: 5 },
+                { bin_id: 'BIN-W2', zone: 'West Stand', fill_level: 60 },
+                { bin_id: 'BIN-N1', zone: 'North Stand', fill_level: 15 },
+                { bin_id: 'BIN-S1', zone: 'South Stand', fill_level: 80 }
+            ],
+            zones: [
+                { zone_id: 'East Stand', occupancy: 12000, capacity: 15000 },
+                { zone_id: 'West Stand', occupancy: 13500, capacity: 15000 },
+                { zone_id: 'North Stand', occupancy: 9500, capacity: 10000 },
+                { zone_id: 'South Stand', occupancy: 5000, capacity: 10000 }
+            ]
+        };
+
+        function updateDataPipeline(type, dataArray) {
+            const timestamp = new Date().toISOString();
+            const updates = {};
+            
+            if (type === 'bins') {
+                dataArray.forEach(newData => {
+                    if (!newData || !newData.bin_id) return;
+                    const existing = dataState.bins.find(b => b.bin_id === newData.bin_id) || {};
+                    const newFill = Math.min(100, Math.max(0, parseFloat(newData.fill_level) || 0));
+                    
+                    const safeKey = String(newData.bin_id).replace(/[.#$[\]\s]/g, '_');
+                    updates[`stadium_data/bins/${safeKey}`] = {
+                        ...existing,
+                        ...newData,
+                        fill_level: newFill,
+                        timestamp: newData.timestamp || timestamp
+                    };
+                });
+            } else if (type === 'zones') {
+                dataArray.forEach(newData => {
+                    if (!newData || !newData.zone_id) return;
+                    const existing = dataState.zones.find(z => z.zone_id === newData.zone_id) || {};
+                    let newOcc = Math.max(0, parseInt(newData.occupancy) || 0);
+                    const cap = newData.capacity ? parseInt(newData.capacity) : (existing.capacity || 0);
+                    if(newOcc > cap && cap > 0) newOcc = cap;
+
+                    const safeKey = String(newData.zone_id).replace(/[.#$[\]\s]/g, '_');
+                    updates[`stadium_data/zones/${safeKey}`] = {
+                        ...existing,
+                        ...newData,
+                        occupancy: newOcc,
+                        capacity: cap,
+                        timestamp: newData.timestamp || timestamp
+                    };
+                });
+            }
+            // Push directly to Firebase. UI will update via onValue listeners.
+            if(Object.keys(updates).length > 0) {
+                update(ref(db), updates).catch(err => console.error("Firebase update failed:", err));
+            }
+        }
+
+        // Fetch and setup CSV dataset for real-time simulation
+        let csvData = [];
+        let csvIndex = 0;
+        
+        fetch('sports_management_dataset.csv')
+            .then(response => response.text())
+            .then(text => {
+                const lines = text.split('\n');
+                const headers = lines[0].split(',').map(h => h.trim());
+                for(let i=1; i<lines.length; i++) {
+                    if(!lines[i].trim()) continue;
+                    const vals = lines[i].split(',');
+                    let obj = {};
+                    headers.forEach((h, idx) => { obj[h] = vals[idx] ? vals[idx].trim() : ''; });
+                    csvData.push(obj);
+                }
+                console.log("Loaded dataset with " + csvData.length + " rows");
+            })
+            .catch(err => console.error("Could not load dataset:", err));
+
+        function runSyntheticGenerators() {
+            if (csvData.length === 0) return; // Wait for data to load
+            
+            const row = csvData[csvIndex];
+            csvIndex = (csvIndex + 1) % csvData.length;
+            
+            const wasteLevels = { 'Low': 0.5, 'Moderate': 1.5, 'High': 4.0 };
+            const wasteFactor = wasteLevels[row['Waste Generation']] || 1.0;
+            
+            const crowdLevels = { 'Low Engagement': 10, 'Moderate Engagement': 50, 'High Engagement': 150 };
+            const crowdFactor = crowdLevels[row['Community Engagement']] || 20;
+            
+            const susScore = row['Sustainability Score'];
+            
+            // Ticking up bin fill levels based on Waste Generation
+            const updatedBins = dataState.bins.map(b => {
+                let newFill = b.fill_level + (Math.random() * wasteFactor);
+                if (newFill >= 100) newFill = 0; // Empty the bin when full
+                return {
+                    bin_id: b.bin_id,
+                    fill_level: newFill,
+                    sustainability_score: susScore
+                };
+            });
+            
+            // Entry-exit counts for zones based on Community Engagement
+            const updatedZones = dataState.zones.map(z => {
+                const entries = Math.floor(Math.random() * crowdFactor);
+                const exits = Math.floor(Math.random() * (crowdFactor * 0.8));
+                return {
+                    zone_id: z.zone_id,
+                    occupancy: Math.max(0, z.occupancy + entries - exits),
+                    sustainability_score: susScore
+                };
+            });
+            
+            updateDataPipeline('bins', updatedBins);
+            updateDataPipeline('zones', updatedZones);
+        }
+
+        function renderDataUI() {
+            const binsContainer = document.getElementById('bins-data');
+            if(binsContainer) {
+                if (dataState.bins.length > 0) {
+                    binsContainer.innerHTML = dataState.bins.map(b => `
+                        <div class="data-item">
+                            <span>${b.bin_id} <span style="font-size: 10px; opacity: 0.7;">(${b.zone || ''})</span></span>
+                            <span class="data-val" style="color: ${b.fill_level > 80 ? '#d32f2f' : '#113366'}">${b.fill_level.toFixed(1)}% ${b.sustainability_score ? `<span style="font-size: 10px; color: ${b.sustainability_score==='High' ? '#2e7d32' : b.sustainability_score==='Low' ? '#d32f2f' : '#f57c00'}; margin-left: 5px;" title="Sustainability Score">[${b.sustainability_score.substring(0,3)}]</span>` : ''}</span>
+                        </div>
+                    `).join('');
+                } else {
+                    binsContainer.innerHTML = '<div class="data-item" style="color: #1c4587; opacity: 0.6; font-style: italic; font-weight: normal;">No bins data</div>';
+                }
+            }
+            
+            const zonesContainer = document.getElementById('zones-data');
+            if(zonesContainer) {
+                if (dataState.zones.length > 0) {
+                    zonesContainer.innerHTML = dataState.zones.map(z => {
+                        const cap = parseInt(z.capacity) || 0;
+                        const occ = parseInt(z.occupancy) || 0;
+                        const pct = cap > 0 ? (occ / cap) * 100 : 0;
+                        return `
+                        <div class="data-item">
+                            <span>${z.zone_id}</span>
+                            <span class="data-val" style="color: ${pct > 90 ? '#d32f2f' : '#113366'}">${occ.toLocaleString()} / ${cap.toLocaleString()} ${z.sustainability_score ? `<span style="font-size: 10px; color: ${z.sustainability_score==='High' ? '#2e7d32' : z.sustainability_score==='Low' ? '#d32f2f' : '#f57c00'}; margin-left: 5px;" title="Sustainability Score">[${z.sustainability_score.substring(0,3)}]</span>` : ''}</span>
+                        </div>
+                        `;
+                    }).join('');
+                } else {
+                    zonesContainer.innerHTML = '<div class="data-item" style="color: #1c4587; opacity: 0.6; font-style: italic; font-weight: normal;">No zones data</div>';
+                }
+            }
+
+            // Sync 3D Elements Colors
+            update3DVisuals();
+        }
+
+        function update3DVisuals() {
+            // Update bins colors based on fill_level
+            dataState.bins.forEach(b => {
+                const mesh = bins3D[b.bin_id];
+                if(mesh && mesh.material) {
+                    let color = 0x2e7d32; // green
+                    if (b.fill_level >= 80) color = 0xd32f2f; // red
+                    else if (b.fill_level >= 50) color = 0xf57c00; // orange
+                    
+                    mesh.material.color.setHex(color);
+                    mesh.material.emissive.setHex(color);
+                }
+            });
+            
+            // Update stadium zones colors based on occupancy
+            dataState.zones.forEach(z => {
+                const meshes = zoneMeshes[z.zone_id];
+                if(meshes && meshes.length > 0) {
+                    const pct = (z.capacity > 0) ? (z.occupancy / z.capacity) * 100 : 0;
+                    let color = bpSurface; // white default
+                    let opacity = 0.35;
+                    
+                    if (pct >= 90) { color = 0xd32f2f; opacity = 0.6; } // red
+                    else if (pct >= 75) { color = 0xf57c00; opacity = 0.5; } // orange
+                    else if (pct >= 50) { color = 0x3d85c6; opacity = 0.4; } // blue
+                    
+                    meshes.forEach(mesh => {
+                        if(mesh.material) {
+                            mesh.material.color.setHex(color);
+                            mesh.material.opacity = opacity;
+                        }
+                    });
+                }
+            });
+        }
+
+        // =====================================================================
+        //  GenAI REASONING LAYER
+        //  - Bin-Priority reasoning (system prompt #1)
+        //  - Staffing recommendation (system prompt #2)
+        //  - Structured JSON output via response_mime_type
+        //  - Rate-limited: threshold-crossing OR every 30 s periodic scan
+        //  - Conditional reasoning: full live state passed each call
+        // =====================================================================
+
+        const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+        // Use Firebase API key as fallback if Gemini key doesn't work
+        const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
+        // Fallback chain: try each model in order if quota is exhausted (429)
+        const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash-8b'];
+        // Try both API keys for each model
+        const API_KEYS = [GEMINI_API_KEY, FIREBASE_API_KEY].filter(Boolean);
+        function geminiUrl(model, apiKey) {
+            return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        }
+
+        // ---- Simulated available staff roster ----
+        const staffRoster = [
+            { id: 'S01', name: 'Team Alpha',  role: 'waste_crew',    current_zone: 'North Stand', status: 'idle' },
+            { id: 'S02', name: 'Team Beta',   role: 'waste_crew',    current_zone: 'South Stand', status: 'active' },
+            { id: 'S03', name: 'Team Gamma',  role: 'crowd_control', current_zone: 'East Stand',  status: 'idle' },
+            { id: 'S04', name: 'Team Delta',  role: 'crowd_control', current_zone: 'West Stand',  status: 'idle' },
+            { id: 'S05', name: 'Team Epsilon', role: 'waste_crew',   current_zone: 'East Stand',  status: 'idle' },
+            { id: 'S06', name: 'Team Zeta',   role: 'crowd_control', current_zone: 'North Stand', status: 'active' }
+        ];
+
+        // ---- System Prompts ----
+
+        const BIN_PRIORITY_SYSTEM_PROMPT = `You are the Waste Operations AI for a FIFA 2026 stadium.
+
+ROLE: Analyse live waste-bin telemetry and zone-traffic data, then produce a prioritised action list.
+
+INPUTS (provided as JSON in the user message):
+  • bins[]:   { bin_id, zone, fill_level (0-100), timestamp }
+  • zones[]:  { zone_id, occupancy, capacity, timestamp }
+
+RULES YOU MUST FOLLOW:
+1. A bin is CRITICAL when fill_level >= 80 %.
+2. A bin is WARNING  when fill_level >= 50 % AND < 80 %.
+3. A bin is NORMAL   when fill_level < 50 %.
+4. Higher zone-occupancy-% makes a co-located bin more urgent (more people → faster fill).
+5. Rank bins by computed urgency = fill_level + (zone_occupancy_pct × 0.3).  Highest first.
+6. For each CRITICAL / WARNING bin, write 1-2 sentences of plain-English reasoning that references the ACTUAL bin_id, fill level, zone name, and zone occupancy numbers.  Do NOT write generic/canned text.
+7. If no bins are at WARNING or CRITICAL, respond with risk_level "LOW" and a brief all-clear note.
+
+OUTPUT (strict JSON — no markdown fences):
+{
+  "risk_level": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
+  "priority_order": [
+    {
+      "bin_id": "<id>",
+      "zone": "<zone>",
+      "fill_level": <number>,
+      "zone_occupancy_pct": <number>,
+      "urgency_score": <number>,
+      "status": "CRITICAL" | "WARNING" | "NORMAL",
+      "reasoning": "<1-2 sentences referencing actual numbers>"
+    }
+  ],
+  "summary": "<2-3 sentence overall situation assessment referencing specific zones & numbers>"
+}`;
+
+        const STAFFING_SYSTEM_PROMPT = `You are the Staffing Operations AI for a FIFA 2026 stadium.
+
+ROLE: Given a prioritised bin list and the available staff roster, recommend concrete staff reassignments.
+
+INPUTS (provided as JSON in the user message):
+  • priority_list: the output of the Bin-Priority AI (same schema).
+  • staff[]:  { id, name, role ("waste_crew" | "crowd_control"), current_zone, status ("idle" | "active") }
+
+RULES YOU MUST FOLLOW:
+1. Only reassign staff whose status is "idle" (do not pull active staff unless there are zero idle options).
+2. Prefer waste_crew for bin emergencies; use crowd_control only as last resort for bins.
+3. Minimise travel: prefer staff already in the same zone or an adjacent zone.
+4. For crowd-control zone overload (zone_occupancy_pct >= 90), redirect crowd_control staff.
+5. Never leave a zone with CRITICAL bins completely unstaffed.
+6. Write 1-2 sentences of reasoning per reassignment referencing the staff name, their current zone, and why they should move.  Do NOT write generic/canned text.
+7. If no reassignment is needed, say so explicitly.
+
+OUTPUT (strict JSON — no markdown fences):
+{
+  "reassignments": [
+    {
+      "staff_id": "<id>",
+      "staff_name": "<name>",
+      "from_zone": "<zone>",
+      "to_zone": "<zone>",
+      "task": "bin_collection" | "crowd_redirect" | "standby",
+      "reasoning": "<1-2 sentences with specifics>"
+    }
+  ],
+  "crowd_redirects": [
+    {
+      "from_zone": "<zone>",
+      "to_zone": "<zone>",
+      "reasoning": "<why redirect spectators>"
+    }
+  ],
+  "summary": "<2-3 sentence overall staffing recommendation>"
+}`;
+
+        // ---- Rate-limiter / debounce state ----
+        const alertSentFor          = new Set();
+        let   lastLLMCallTimestamp   = 0;
+        let   llmCallInFlight        = false;
+        const LLM_MIN_INTERVAL_MS   = 30000;   // 30 seconds between calls
+        const LLM_PERIODIC_INTERVAL = 30000;   // periodic scan every 30 s
+        let   lastPeriodicScan       = 0;
+
+        // ---- Gemini API call helper with structured JSON enforcement + model fallback ----
+        async function callGemini(systemPrompt, userPayload) {
+            let lastError = null;
+
+            for (const apiKey of API_KEYS) {
+                for (const model of GEMINI_MODELS) {
+                    try {
+                        console.log(`[GenAI] Trying model: ${model} with key: ${apiKey.substring(0, 5)}...`);
+                        const response = await fetch(geminiUrl(model, apiKey), {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                system_instruction: {
+                                    parts: [{ text: systemPrompt }]
+                                },
+                                contents: [{
+                                    role: 'user',
+                                    parts: [{ text: JSON.stringify(userPayload) }]
+                                }],
+                                generationConfig: {
+                                    response_mime_type: 'application/json',
+                                    temperature: 0.3,
+                                    maxOutputTokens: 2048
+                                }
+                            })
+                        });
+
+                        if (response.status === 429) {
+                            console.warn(`[GenAI] Model ${model} with this key quota exhausted, trying next...`);
+                            lastError = new Error(`${model}: quota exhausted (429)`);
+                            continue; // try next model/key combination
+                        }
+
+                        if (!response.ok) {
+                            const errBody = await response.text();
+                            throw new Error(`Gemini ${response.status}: ${errBody}`);
+                        }
+
+                        const data = await response.json();
+                        const raw  = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                        if (!raw) throw new Error('Empty Gemini response');
+
+                        // Parse the structured JSON (strip any accidental markdown fences)
+                        const cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+                        console.log(`[GenAI] Success with model: ${model}`);
+                        return JSON.parse(cleaned);
+
+                    } catch (err) {
+                        console.warn(`[GenAI] Model ${model} failed:`, err.message);
+                        lastError = err;
+                        continue; // try next model/key combination
+                    }
+                }
+            }
+
+            console.error('All Gemini API requests failed (likely invalid key or quota). Using mock data for demonstration.', lastError);
+            
+            // Provide a mock response so the UI can still be demonstrated
+            if (systemPrompt === BIN_PRIORITY_SYSTEM_PROMPT) {
+                return {
+                    risk_level: "HIGH",
+                    priority_order: [
+                        { bin_id: "BIN-W2", zone: "West Stand", fill_level: 85, zone_occupancy_pct: 90, urgency_score: 112, status: "CRITICAL", reasoning: "API Keys failed. This is a simulated response indicating CRITICAL fill." },
+                        { bin_id: "BIN-S1", zone: "South Stand", fill_level: 80, zone_occupancy_pct: 50, urgency_score: 95, status: "CRITICAL", reasoning: "API Keys failed. Simulated CRITICAL bin." }
+                    ],
+                    summary: "API Keys failed or quota exhausted. Displaying simulated data."
+                };
+            } else {
+                return {
+                    reassignments: [
+                        { staff_id: "S01", staff_name: "Team Alpha", from_zone: "North Stand", to_zone: "West Stand", task: "bin_collection", reasoning: "Simulated reassignment due to API failure." }
+                    ],
+                    crowd_redirects: [],
+                    summary: "Simulated staffing due to API failure."
+                };
+            }
+        }
+
+
+
+        // ---- Core reasoning pipeline ----
+        async function runReasoningPipeline(triggerSource) {
+            if (llmCallInFlight) return;               // already running
+            const now = Date.now();
+            if (now - lastLLMCallTimestamp < LLM_MIN_INTERVAL_MS) return; // rate limit
+
+            llmCallInFlight      = true;
+            lastLLMCallTimestamp  = now;
+
+            const statusEl     = document.getElementById('status-val');
+            const llmPanel     = document.getElementById('llm-panel');
+            const responseText = document.getElementById('llm-response-text');
+
+            // Show "analysing" state
+            statusEl.innerText = 'AI ANALYSING';
+            statusEl.style.color = '#f57c00';
+            llmPanel.classList.add('active');
+            responseText.innerHTML = `<span style="opacity:0.7">&#9881; Running bin-priority reasoning…<br><small>Trigger: ${triggerSource}</small></span>`;
+
+            if (!GEMINI_API_KEY) {
+                responseText.innerHTML = `<strong>No API Key</strong><br>Set <code>VITE_GEMINI_API_KEY</code> in your <code>.env</code> file to enable GenAI reasoning.`;
+                llmCallInFlight = false;
+                return;
+            }
+
+            try {
+                // ── Step 1: Bin-Priority Reasoning ──
+                const binInput = {
+                    bins:  dataState.bins.map(b => {
+                        const zoneData = dataState.zones.find(z => z.zone_id === b.zone);
+                        const pct = zoneData && zoneData.capacity > 0 ? (zoneData.occupancy / zoneData.capacity) * 100 : 0;
+                        return {
+                            bin_id: b.bin_id,
+                            zone: b.zone,
+                            fill_level: parseFloat(b.fill_level?.toFixed?.(1) ?? b.fill_level),
+                            zone_occupancy_pct: parseFloat(pct.toFixed(1)),
+                            timestamp: b.timestamp || new Date().toISOString()
+                        };
+                    }),
+                    zones: dataState.zones.map(z => ({
+                        zone_id: z.zone_id,
+                        occupancy: z.occupancy,
+                        capacity: z.capacity,
+                        timestamp: z.timestamp || new Date().toISOString()
+                    }))
+                };
+
+                const priorityResult = await callGemini(BIN_PRIORITY_SYSTEM_PROMPT, binInput);
+                console.log('[GenAI] Bin-Priority Result:', priorityResult);
+
+                // ── Step 2: Staffing Recommendation ──
+                const staffInput = {
+                    priority_list: priorityResult,
+                    staff: staffRoster
+                };
+
+                const staffResult = await callGemini(STAFFING_SYSTEM_PROMPT, staffInput);
+                console.log('[GenAI] Staffing Result:', staffResult);
+
+                // ── Step 3: Write structured results to Firebase ──
+                const aiPayload = {
+                    timestamp:    new Date().toISOString(),
+                    trigger:      triggerSource,
+                    bin_priority: priorityResult,
+                    staffing:     staffResult
+                };
+                update(ref(db), { 'stadium_data/ai_recommendations': aiPayload })
+                    .catch(err => console.error('Firebase AI write failed:', err));
+
+                // ── Step 4: Render results in the LLM panel ──
+                renderAIPanel(priorityResult, staffResult, triggerSource);
+
+            } catch (error) {
+                console.error('[GenAI] Pipeline error:', error);
+                responseText.innerHTML = `
+                    <strong style="color:#d32f2f">AI Pipeline Error</strong><br>
+                    <span style="font-size:12px">${error.message}</span><br><br>
+                    <em>Trigger: ${triggerSource}</em>`;
+            } finally {
+                llmCallInFlight = false;
+                setTimeout(() => {
+                    if (statusEl.innerText === 'AI ANALYSING') {
+                        statusEl.innerText = 'ONLINE';
+                        statusEl.style.color = '#2e7d32';
+                    }
+                }, 3000);
+            }
+        }
+
+        // ---- Render structured AI output into the panel ----
+        function renderAIPanel(priority, staffing, trigger) {
+            const el = document.getElementById('llm-response-text');
+
+            const riskColors = { CRITICAL: '#d32f2f', HIGH: '#e65100', MEDIUM: '#f57c00', LOW: '#2e7d32' };
+            const riskColor  = riskColors[priority.risk_level] || '#113366';
+
+            // Build priority table
+            const priorityRows = (priority.priority_order || [])
+                .filter(p => p.status !== 'NORMAL')
+                .slice(0, 6)
+                .map(p => `
+                    <div style="margin-bottom:8px;padding:6px 8px;background:rgba(28,69,135,0.06);border-left:3px solid ${p.status === 'CRITICAL' ? '#d32f2f' : '#f57c00'};">
+                        <div style="display:flex;justify-content:space-between;font-weight:700;">
+                            <span>${p.bin_id}</span>
+                            <span style="color:${p.status === 'CRITICAL' ? '#d32f2f' : '#f57c00'}">${p.fill_level}% ▪ ${p.status}</span>
+                        </div>
+                        <div style="font-size:11px;opacity:0.8;margin-top:2px;">${p.zone} · Zone ${p.zone_occupancy_pct?.toFixed?.(0) ?? '?'}% full · Urgency ${p.urgency_score?.toFixed?.(1) ?? '?'}</div>
+                        <div style="font-size:11px;margin-top:3px;font-style:italic;">${p.reasoning}</div>
+                    </div>
+                `).join('');
+
+            // Build staffing rows
+            const staffRows = (staffing.reassignments || []).map(r => `
+                <div style="margin-bottom:6px;padding:5px 8px;background:rgba(46,125,50,0.08);border-left:3px solid #2e7d32;">
+                    <div style="font-weight:700;font-size:12px;">${r.staff_name}: ${r.from_zone} → ${r.to_zone}</div>
+                    <div style="font-size:11px;opacity:0.85;">${r.task?.replace('_', ' ')} · ${r.reasoning}</div>
+                </div>
+            `).join('') || '<div style="font-size:12px;opacity:0.7;">No reassignments needed.</div>';
+
+            // Build crowd redirect rows
+            const redirectRows = (staffing.crowd_redirects || []).map(r => `
+                <div style="margin-bottom:4px;font-size:11px;">
+                    <strong>${r.from_zone} → ${r.to_zone}:</strong> ${r.reasoning}
+                </div>
+            `).join('');
+
+            el.innerHTML = `
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                    <strong style="color:${riskColor};font-size:15px;">Risk: ${priority.risk_level}</strong>
+                    <span style="font-size:10px;opacity:0.6;">${trigger} · ${new Date().toLocaleTimeString()}</span>
+                </div>
+
+                <div style="font-size:12px;margin-bottom:10px;padding:6px 8px;background:rgba(28,69,135,0.04);border-radius:3px;">
+                    ${priority.summary || ''}
+                </div>
+
+                <div style="margin-bottom:6px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.7;">Priority Bins</div>
+                ${priorityRows || '<div style="font-size:12px;color:#2e7d32;">All bins nominal.</div>'}
+
+                <div style="margin:10px 0 6px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.7;">Staff Reassignments</div>
+                ${staffRows}
+
+                ${redirectRows ? `
+                    <div style="margin:10px 0 6px;font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.7;">Crowd Redirects</div>
+                    ${redirectRows}
+                ` : ''}
+
+                <div style="margin-top:10px;font-size:11px;padding:5px 8px;background:rgba(28,69,135,0.04);border-radius:3px;">
+                    <strong>Staffing Summary:</strong> ${staffing.summary || 'N/A'}
+                </div>
+            `;
+        }
+
+        // ---- Threshold-crossing detector ----
+        function checkThresholds() {
+            let shouldTrigger = false;
+            let triggerReasons = [];
+
+            // Bin threshold: >= 80% critical
+            dataState.bins.forEach(b => {
+                const key = `bin_${b.bin_id}`;
+                if (b.fill_level >= 80 && !alertSentFor.has(key)) {
+                    alertSentFor.add(key);
+                    shouldTrigger = true;
+                    triggerReasons.push(`${b.bin_id} hit ${b.fill_level.toFixed(1)}%`);
+                } else if (b.fill_level < 75) {
+                    // Hysteresis: only clear when it drops below 75 (avoids flapping)
+                    alertSentFor.delete(key);
+                }
+            });
+
+            // Zone threshold: >= 90% capacity
+            dataState.zones.forEach(z => {
+                const key = `zone_${z.zone_id}`;
+                const pct = (z.capacity > 0) ? (z.occupancy / z.capacity) * 100 : 0;
+                if (pct >= 90 && !alertSentFor.has(key)) {
+                    alertSentFor.add(key);
+                    shouldTrigger = true;
+                    triggerReasons.push(`${z.zone_id} at ${pct.toFixed(1)}% capacity`);
+                } else if (pct < 85) {
+                    alertSentFor.delete(key);
+                }
+            });
+
+            if (shouldTrigger) {
+                runReasoningPipeline(`Threshold: ${triggerReasons.join(', ')}`);
+            }
+        }
+
+        // ---- Periodic scan (every 30 s) ----
+        setInterval(() => {
+            const hasCritical = dataState.bins.some(b => b.fill_level >= 50) ||
+                                dataState.zones.some(z => (z.capacity > 0) && (z.occupancy / z.capacity) >= 0.75);
+            if (hasCritical) {
+                runReasoningPipeline('Periodic 30 s scan');
+            }
+        }, LLM_PERIODIC_INTERVAL);
+
+        // Initialize UI and Firebase Listeners
+        onValue(ref(db, 'stadium_data/bins'), (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                dataState.bins = Object.values(val);
+            } else {
+                dataState.bins = [];
+            }
+            checkThresholds();
+            renderDataUI();
+        });
+
+        let currentAIRecommendations = null;
+        onValue(ref(db, 'stadium_data/ai_recommendations'), (snapshot) => {
+            currentAIRecommendations = snapshot.val() || {};
+        });
+
+        onValue(ref(db, 'stadium_data/zones'), (snapshot) => {
+            const val = snapshot.val();
+            if (val) {
+                dataState.zones = Object.values(val);
+            } else {
+                dataState.zones = [];
+            }
+            checkThresholds();
+            renderDataUI();
+        });
+
+        // Setup Raycaster for clicking 3D bins
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        window.addEventListener('click', (event) => {
+            // Ignore if clicking on UI (the hud panels have pointer-events: auto, except most are none)
+            if (event.target.closest('.hud')) return;
+
+            mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+            raycaster.setFromCamera(mouse, camera);
+
+            const binMeshes = Object.values(bins3D);
+            const intersects = raycaster.intersectObjects(binMeshes, true);
+
+            if (intersects.length > 0) {
+                let clickedBinId = null;
+                // find which bin was clicked
+                for (let id in bins3D) {
+                    // Check if intersected object is the bin mesh or its wireframe child
+                    if (bins3D[id] === intersects[0].object || bins3D[id].children.includes(intersects[0].object)) {
+                        clickedBinId = id;
+                        break;
+                    }
+                }
+                
+                if (clickedBinId && currentAIRecommendations?.bin_priority?.priority_order) {
+                    const binInfo = currentAIRecommendations.bin_priority.priority_order.find(p => p.bin_id === clickedBinId);
+                    if (binInfo) {
+                        const llmPanel = document.getElementById('llm-panel');
+                        const responseText = document.getElementById('llm-response-text');
+                        
+                        llmPanel.classList.add('active');
+                        
+                        const color = binInfo.status === 'CRITICAL' ? '#d32f2f' : (binInfo.status === 'WARNING' ? '#f57c00' : '#2e7d32');
+                        
+                        responseText.innerHTML = `
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                                <strong style="color:${color};font-size:15px;">Focus: ${binInfo.bin_id}</strong>
+                                <span style="font-size:10px;opacity:0.6;">Interactive Selection</span>
+                            </div>
+                            <div style="margin-bottom:8px;padding:6px 8px;background:rgba(28,69,135,0.06);border-left:3px solid ${color};">
+                                <div style="display:flex;justify-content:space-between;font-weight:700;">
+                                    <span>${binInfo.bin_id}</span>
+                                    <span style="color:${color}">${binInfo.fill_level}% ▪ ${binInfo.status}</span>
+                                </div>
+                                <div style="font-size:11px;opacity:0.8;margin-top:2px;">${binInfo.zone} · Zone ${binInfo.zone_occupancy_pct?.toFixed?.(0) ?? '?'}% full · Urgency ${binInfo.urgency_score?.toFixed?.(1) ?? '?'}</div>
+                                <div style="font-size:11px;margin-top:3px;font-style:italic;">${binInfo.reasoning || 'No AI reasoning available.'}</div>
+                            </div>
+                        `;
+                    }
+                }
+            }
+        });
+
+        renderDataUI();
+        // Start synthetic data stream. In a production app, the generator might be a backend service.
+        // We push the initial data to Firebase if it's empty, or just let the synthetic generator push updates.
+        // Initialize standard dataset into Firebase right away so it exists.
+        updateDataPipeline('bins', dataState.bins);
+        updateDataPipeline('zones', dataState.zones);
+        
+        // Start synthetic data stream
+        setInterval(runSyntheticGenerators, 2500);
+
+    </script>
+</body>
+</html>

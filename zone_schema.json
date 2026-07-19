@@ -1,0 +1,13 @@
+{
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "zone_id": { "type": "string" },
+      "occupancy": { "type": "integer" },
+      "capacity": { "type": "integer" },
+      "timestamp": { "type": "string", "format": "date-time" }
+    },
+    "required": ["zone_id", "occupancy", "capacity", "timestamp"]
+  }
+}

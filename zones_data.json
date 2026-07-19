@@ -1,0 +1,352 @@
+[
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 45862,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T21:00:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 33905,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T21:05:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 60856,
+        "capacity": 82500,
+        "timestamp": "2026-07-18T21:10:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 31320,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T21:15:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 48326,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T21:20:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 27877,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T21:25:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 62578,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T21:30:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 28733,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T21:35:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 42009,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T21:40:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 44604,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T21:45:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 50245,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T21:50:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 40378,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T21:55:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 50262,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T22:00:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 60271,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T22:05:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 39466,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T22:10:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 43080,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T22:15:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 40044,
+        "capacity": 82500,
+        "timestamp": "2026-07-18T22:20:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 39320,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T22:25:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 14205,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T22:30:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 52516,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T22:35:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 36317,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T22:40:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 13640,
+        "capacity": 82500,
+        "timestamp": "2026-07-18T22:45:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 58671,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T22:50:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 26511,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T22:55:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 48339,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T23:00:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 25946,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T23:05:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 18710,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T23:10:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 45839,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T23:15:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 39432,
+        "capacity": 82500,
+        "timestamp": "2026-07-18T23:20:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 42064,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T23:25:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 52976,
+        "capacity": 87523,
+        "timestamp": "2026-07-18T23:30:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 17373,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T23:35:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 33508,
+        "capacity": 70240,
+        "timestamp": "2026-07-18T23:40:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 45342,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T23:45:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 14288,
+        "capacity": 80000,
+        "timestamp": "2026-07-18T23:50:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 39385,
+        "capacity": 54500,
+        "timestamp": "2026-07-18T23:55:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 33956,
+        "capacity": 70240,
+        "timestamp": "2026-07-19T00:00:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 51509,
+        "capacity": 80000,
+        "timestamp": "2026-07-19T00:05:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 37880,
+        "capacity": 54500,
+        "timestamp": "2026-07-19T00:10:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "BC Place",
+        "occupancy": 40841,
+        "capacity": 54500,
+        "timestamp": "2026-07-19T00:15:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 21875,
+        "capacity": 82500,
+        "timestamp": "2026-07-19T00:20:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 51931,
+        "capacity": 87523,
+        "timestamp": "2026-07-19T00:25:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 46203,
+        "capacity": 70240,
+        "timestamp": "2026-07-19T00:30:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 30298,
+        "capacity": 87523,
+        "timestamp": "2026-07-19T00:35:46.107941",
+        "sustainability_score": "High"
+    },
+    {
+        "zone_id": "Estadio Azteca",
+        "occupancy": 60496,
+        "capacity": 87523,
+        "timestamp": "2026-07-19T00:40:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 29920,
+        "capacity": 82500,
+        "timestamp": "2026-07-19T00:45:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "AT&T Stadium",
+        "occupancy": 56833,
+        "capacity": 80000,
+        "timestamp": "2026-07-19T00:50:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 12927,
+        "capacity": 82500,
+        "timestamp": "2026-07-19T00:55:46.107941",
+        "sustainability_score": "Low"
+    },
+    {
+        "zone_id": "SoFi Stadium",
+        "occupancy": 39406,
+        "capacity": 70240,
+        "timestamp": "2026-07-19T01:00:46.107941",
+        "sustainability_score": "Moderate"
+    },
+    {
+        "zone_id": "MetLife Stadium",
+        "occupancy": 43360,
+        "capacity": 82500,
+        "timestamp": "2026-07-19T01:05:46.107941",
+        "sustainability_score": "Moderate"
+    }
+]
