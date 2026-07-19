@@ -1,0 +1,303 @@
+diff --git a/dashboard.html b/dashboard.html
+index 847ba7e..2dcf324 100644
+--- a/dashboard.html
++++ b/dashboard.html
+@@ -344,14 +344,14 @@
+         import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+ 
+         const firebaseConfig = {
+-            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+-            appId: import.meta.env.VITE_FIREBASE_APP_ID,
+-            databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+-            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+-            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+-            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+-            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+-            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
++            projectId: "d-e-s-fbaf2",
++            appId: "1:1089319276582:web:929e7f0cabd4ff0604d6e7",
++            databaseURL: "https://d-e-s-fbaf2-default-rtdb.firebaseio.com",
++            storageBucket: "d-e-s-fbaf2.firebasestorage.app",
++            apiKey: "AIzaSyD29Go8AeD5CsEaLmYfkJP2X5MHhck504A",
++            authDomain: "d-e-s-fbaf2.firebaseapp.com",
++            messagingSenderId: "1089319276582",
++            measurementId: "G-13G2YNMW93"
+         };
+ 
+         const app = initializeApp(firebaseConfig);
+diff --git a/firebase.json b/firebase.json
+index b6a1b1b..9e66122 100644
+--- a/firebase.json
++++ b/firebase.json
+@@ -1,5 +1,8 @@
+ {
+   "database": {
+     "rules": "database.rules.json"
++  },
++  "functions": {
++    "source": "functions"
+   }
+ }
+diff --git a/index.html b/index.html
+index 4d15937..623a36f 100644
+--- a/index.html
++++ b/index.html
+@@ -834,16 +834,15 @@
+         
+ 
+ 
+-        // Firebase Configuration using Vite environment variables
+         const firebaseConfig = {
+-            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+-            appId: import.meta.env.VITE_FIREBASE_APP_ID,
+-            databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+-            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+-            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+-            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+-            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+-            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
++            projectId: "d-e-s-fbaf2",
++            appId: "1:1089319276582:web:929e7f0cabd4ff0604d6e7",
++            databaseURL: "https://d-e-s-fbaf2-default-rtdb.firebaseio.com",
++            storageBucket: "d-e-s-fbaf2.firebasestorage.app",
++            apiKey: "AIzaSyD29Go8AeD5CsEaLmYfkJP2X5MHhck504A",
++            authDomain: "d-e-s-fbaf2.firebaseapp.com",
++            messagingSenderId: "1089319276582",
++            measurementId: "G-13G2YNMW93"
+         };
+ 
+         const app = initializeApp(firebaseConfig);
+@@ -1052,16 +1051,7 @@
+         //  - Conditional reasoning: full live state passed each call
+         // =====================================================================
+ 
+-        const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
+-        // Use Firebase API key as fallback if Gemini key doesn't work
+-        const FIREBASE_API_KEY = import.meta.env.VITE_FIREBASE_API_KEY;
+-        // Fallback chain: try each model in order if quota is exhausted (429)
+-        const GEMINI_MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash-8b'];
+-        // Try both API keys for each model
+-        const API_KEYS = [GEMINI_API_KEY, FIREBASE_API_KEY].filter(Boolean);
+-        function geminiUrl(model, apiKey) {
+-            return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+-        }
++        // Gemini API configuration removed per user request - pipeline runs entirely locally.
+ 
+         // ---- Simulated available staff roster ----
+         const staffRoster = [
+@@ -1073,80 +1063,7 @@
+             { id: 'S06', name: 'Team Zeta',   role: 'crowd_control', current_zone: 'North Stand', status: 'active' }
+         ];
+ 
+-        // ---- System Prompts ----
+-
+-        const BIN_PRIORITY_SYSTEM_PROMPT = `You are the Waste Operations AI for a FIFA 2026 stadium.
+-
+-ROLE: Analyse live waste-bin telemetry and zone-traffic data, then produce a prioritised action list.
+-
+-INPUTS (provided as JSON in the user message):
+-  • bins[]:   { bin_id, zone, fill_level (0-100), timestamp }
+-  • zones[]:  { zone_id, occupancy, capacity, timestamp }
+-
+-RULES YOU MUST FOLLOW:
+-1. A bin is CRITICAL when fill_level >= 80 %.
+-2. A bin is WARNING  when fill_level >= 50 % AND < 80 %.
+-3. A bin is NORMAL   when fill_level < 50 %.
+-4. Higher zone-occupancy-% makes a co-located bin more urgent (more people → faster fill).
+-5. Rank bins by computed urgency = fill_level + (zone_occupancy_pct × 0.3).  Highest first.
+-6. For each CRITICAL / WARNING bin, write 1-2 sentences of plain-English reasoning that references the ACTUAL bin_id, fill level, zone name, and zone occupancy numbers.  Do NOT write generic/canned text.
+-7. If no bins are at WARNING or CRITICAL, respond with risk_level "LOW" and a brief all-clear note.
+-
+-OUTPUT (strict JSON — no markdown fences):
+-{
+-  "risk_level": "CRITICAL" | "HIGH" | "MEDIUM" | "LOW",
+-  "priority_order": [
+-    {
+-      "bin_id": "<id>",
+-      "zone": "<zone>",
+-      "fill_level": <number>,
+-      "zone_occupancy_pct": <number>,
+-      "urgency_score": <number>,
+-      "status": "CRITICAL" | "WARNING" | "NORMAL",
+-      "reasoning": "<1-2 sentences referencing actual numbers>"
+-    }
+-  ],
+-  "summary": "<2-3 sentence overall situation assessment referencing specific zones & numbers>"
+-}`;
+-
+-        const STAFFING_SYSTEM_PROMPT = `You are the Staffing Operations AI for a FIFA 2026 stadium.
+-
+-ROLE: Given a prioritised bin list and the available staff roster, recommend concrete staff reassignments.
+-
+-INPUTS (provided as JSON in the user message):
+-  • priority_list: the output of the Bin-Priority AI (same schema).
+-  • staff[]:  { id, name, role ("waste_crew" | "crowd_control"), current_zone, status ("idle" | "active") }
+-
+-RULES YOU MUST FOLLOW:
+-1. Only reassign staff whose status is "idle" (do not pull active staff unless there are zero idle options).
+-2. Prefer waste_crew for bin emergencies; use crowd_control only as last resort for bins.
+-3. Minimise travel: prefer staff already in the same zone or an adjacent zone.
+-4. For crowd-control zone overload (zone_occupancy_pct >= 90), redirect crowd_control staff.
+-5. Never leave a zone with CRITICAL bins completely unstaffed.
+-6. Write 1-2 sentences of reasoning per reassignment referencing the staff name, their current zone, and why they should move.  Do NOT write generic/canned text.
+-7. If no reassignment is needed, say so explicitly.
+-
+-OUTPUT (strict JSON — no markdown fences):
+-{
+-  "reassignments": [
+-    {
+-      "staff_id": "<id>",
+-      "staff_name": "<name>",
+-      "from_zone": "<zone>",
+-      "to_zone": "<zone>",
+-      "task": "bin_collection" | "crowd_redirect" | "standby",
+-      "reasoning": "<1-2 sentences with specifics>"
+-    }
+-  ],
+-  "crowd_redirects": [
+-    {
+-      "from_zone": "<zone>",
+-      "to_zone": "<zone>",
+-      "reasoning": "<why redirect spectators>"
+-    }
+-  ],
+-  "summary": "<2-3 sentence overall staffing recommendation>"
+-}`;
++        // Prompts removed as pipeline runs via local reasoning engine
+ 
+         // ---- Rate-limiter / debounce state ----
+         const alertSentFor          = new Set();
+@@ -1156,90 +1073,13 @@ OUTPUT (strict JSON — no markdown fences):
+         const LLM_PERIODIC_INTERVAL = 30000;   // periodic scan every 30 s
+         let   lastPeriodicScan       = 0;
+ 
+-        // ---- Gemini API call helper with structured JSON enforcement + model fallback ----
+-        async function callGemini(systemPrompt, userPayload) {
+-            let lastError = null;
+-
+-            for (const apiKey of API_KEYS) {
+-                for (const model of GEMINI_MODELS) {
+-                    try {
+-                        console.log(`[GenAI] Trying model: ${model} with key: ${apiKey.substring(0, 5)}...`);
+-                        const response = await fetch(geminiUrl(model, apiKey), {
+-                            method: 'POST',
+-                            headers: { 'Content-Type': 'application/json' },
+-                            body: JSON.stringify({
+-                                system_instruction: {
+-                                    parts: [{ text: systemPrompt }]
+-                                },
+-                                contents: [{
+-                                    role: 'user',
+-                                    parts: [{ text: JSON.stringify(userPayload) }]
+-                                }],
+-                                generationConfig: {
+-                                    response_mime_type: 'application/json',
+-                                    temperature: 0.3,
+-                                    maxOutputTokens: 2048
+-                                }
+-                            })
+-                        });
+-
+-                        if (response.status === 429) {
+-                            console.warn(`[GenAI] Model ${model} with this key quota exhausted, trying next...`);
+-                            lastError = new Error(`${model}: quota exhausted (429)`);
+-                            continue; // try next model/key combination
+-                        }
+-
+-                        if (!response.ok) {
+-                            const errBody = await response.text();
+-                            throw new Error(`Gemini ${response.status}: ${errBody}`);
+-                        }
+-
+-                        const data = await response.json();
+-                        const raw  = data.candidates?.[0]?.content?.parts?.[0]?.text;
+-                        if (!raw) throw new Error('Empty Gemini response');
++        // callGemini helper function removed as all content generation is done locally
+ 
+-                        // Parse the structured JSON (strip any accidental markdown fences)
+-                        const cleaned = raw.replace(/```json\s*/gi, '').replace(/```\s*/g, '').trim();
+-                        console.log(`[GenAI] Success with model: ${model}`);
+-                        return JSON.parse(cleaned);
+ 
+-                    } catch (err) {
+-                        console.warn(`[GenAI] Model ${model} failed:`, err.message);
+-                        lastError = err;
+-                        continue; // try next model/key combination
+-                    }
+-                }
+-            }
+ 
+-            console.error('All Gemini API requests failed (likely invalid key or quota). Using mock data for demonstration.', lastError);
+-            
+-            // Provide a mock response so the UI can still be demonstrated
+-            if (systemPrompt === BIN_PRIORITY_SYSTEM_PROMPT) {
+-                return {
+-                    risk_level: "HIGH",
+-                    priority_order: [
+-                        { bin_id: "BIN-W2", zone: "West Stand", fill_level: 85, zone_occupancy_pct: 90, urgency_score: 112, status: "CRITICAL", reasoning: "API Keys failed. This is a simulated response indicating CRITICAL fill." },
+-                        { bin_id: "BIN-S1", zone: "South Stand", fill_level: 80, zone_occupancy_pct: 50, urgency_score: 95, status: "CRITICAL", reasoning: "API Keys failed. Simulated CRITICAL bin." }
+-                    ],
+-                    summary: "API Keys failed or quota exhausted. Displaying simulated data."
+-                };
+-            } else {
+-                return {
+-                    reassignments: [
+-                        { staff_id: "S01", staff_name: "Team Alpha", from_zone: "North Stand", to_zone: "West Stand", task: "bin_collection", reasoning: "Simulated reassignment due to API failure." }
+-                    ],
+-                    crowd_redirects: [],
+-                    summary: "Simulated staffing due to API failure."
+-                };
+-            }
+-        }
+-
+-
+-
+-        // ---- Core reasoning pipeline ----
+-        // ---- Offline reasoning generator fallback for perfect degradation ----
+-        function runOfflineReasoning(binInput) {
+-            console.log('[GenAI] Running offline/local reasoning pipeline.');
++        // ---- Local reasoning engine ----
++        function runLocalReasoning(binInput) {
++            console.log('[GenAI] Running local/deterministic reasoning pipeline.');
+             
+             // Calculate urgency scores and status for all bins
+             const priorityOrder = binInput.bins.map(b => {
+@@ -1380,34 +1220,10 @@ OUTPUT (strict JSON — no markdown fences):
+             };
+ 
+             try {
+-                let priorityResult;
+-                let staffResult;
+-
+-                // Fallback gracefully if API key is missing
+-                if (!GEMINI_API_KEY) {
+-                    const offlineRes = runOfflineReasoning(binInput);
+-                    priorityResult = offlineRes.priorityResult;
+-                    staffResult = offlineRes.staffResult;
+-                } else {
+-                    try {
+-                        // ── Step 1: Bin-Priority Reasoning ──
+-                        priorityResult = await callGemini(BIN_PRIORITY_SYSTEM_PROMPT, binInput);
+-                        console.log('[GenAI] Bin-Priority Result:', priorityResult);
+-
+-                        // ── Step 2: Staffing Recommendation ──
+-                        const staffInput = {
+-                            priority_list: priorityResult,
+-                            staff: staffRoster
+-                        };
+-                        staffResult = await callGemini(STAFFING_SYSTEM_PROMPT, staffInput);
+-                        console.log('[GenAI] Staffing Result:', staffResult);
+-                    } catch (apiErr) {
+-                        console.warn('[GenAI] API Call failed, degrading to offline reasoning:', apiErr);
+-                        const offlineRes = runOfflineReasoning(binInput);
+-                        priorityResult = offlineRes.priorityResult;
+-                        staffResult = offlineRes.staffResult;
+-                    }
+-                }
++                // Run local reasoning directly (Gemini API removed per request)
++                const localRes = runLocalReasoning(binInput);
++                const priorityResult = localRes.priorityResult;
++                const staffResult = localRes.staffResult;
+ 
+                 // ── Step 3: Write structured results to Firebase ──
+                 const aiPayload = {

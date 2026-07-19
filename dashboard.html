@@ -245,6 +245,30 @@
             color: #cbd5e1;
             border: 1px solid rgba(255,255,255,0.05);
         }
+
+        .zone.selected {
+            border-color: #3b82f6 !important;
+            border-width: 3px !important;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+            transform: scale(1.05);
+            z-index: 10;
+        }
+
+        .feed-item {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .feed-item:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateX(4px);
+        }
+        .feed-item.selected {
+            border-color: #3b82f6 !important;
+            border-width: 4px !important;
+            background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%) !important;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+            transform: scale(1.02) translateX(6px);
+        }
     </style>
 </head>
 <body>
@@ -272,21 +296,21 @@
             
             <div class="stadium-map">
                 <div class="pitch"></div>
-                <div class="zone north" id="zone-North Stand">
-                    <div class="zone-title">North Stand</div>
-                    <div class="zone-occ" id="occ-North Stand">-- / --</div>
+                <div class="zone north" id="zone-North" onclick="selectItem('zone', 'North')">
+                    <div class="zone-title">North</div>
+                    <div class="zone-occ" id="occ-North">-- / --</div>
                 </div>
-                <div class="zone south" id="zone-South Stand">
-                    <div class="zone-title">South Stand</div>
-                    <div class="zone-occ" id="occ-South Stand">-- / --</div>
+                <div class="zone south" id="zone-South" onclick="selectItem('zone', 'South')">
+                    <div class="zone-title">South</div>
+                    <div class="zone-occ" id="occ-South">-- / --</div>
                 </div>
-                <div class="zone east" id="zone-East Stand">
-                    <div class="zone-title">East Stand</div>
-                    <div class="zone-occ" id="occ-East Stand">-- / --</div>
+                <div class="zone east" id="zone-East" onclick="selectItem('zone', 'East')">
+                    <div class="zone-title">East</div>
+                    <div class="zone-occ" id="occ-East">-- / --</div>
                 </div>
-                <div class="zone west" id="zone-West Stand">
-                    <div class="zone-title">West Stand</div>
-                    <div class="zone-occ" id="occ-West Stand">-- / --</div>
+                <div class="zone west" id="zone-West" onclick="selectItem('zone', 'West')">
+                    <div class="zone-title">West</div>
+                    <div class="zone-occ" id="occ-West">-- / --</div>
                 </div>
             </div>
         </div>
@@ -344,14 +368,14 @@
         import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
         const firebaseConfig = {
-            projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-            appId: import.meta.env.VITE_FIREBASE_APP_ID,
-            databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
-            storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-            apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-            authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-            messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-            measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+            projectId: "d-e-s-fbaf2",
+            appId: "1:1089319276582:web:929e7f0cabd4ff0604d6e7",
+            databaseURL: "https://d-e-s-fbaf2-default-rtdb.firebaseio.com",
+            storageBucket: "d-e-s-fbaf2.firebasestorage.app",
+            apiKey: "AIzaSyD29Go8AeD5CsEaLmYfkJP2X5MHhck504A",
+            authDomain: "d-e-s-fbaf2.firebaseapp.com",
+            messagingSenderId: "1089319276582",
+            measurementId: "G-13G2YNMW93"
         };
 
         const app = initializeApp(firebaseConfig);
@@ -360,6 +384,80 @@
         // State
         let currentZones = {};
         let currentBins = {};
+        let selectedItem = null; // { itemType, id }
+
+        // Setup BroadcastChannel for bidirectional sync
+        const syncChannel = new BroadcastChannel('stadium_sync');
+
+        function selectItem(itemType, id, fromRemote = false) {
+            // Toggle selection if clicking the same item locally
+            if (!fromRemote && selectedItem && selectedItem.itemType === itemType && selectedItem.id === id) {
+                itemType = null;
+                id = null;
+            }
+
+            if (!itemType || !id) {
+                selectedItem = null;
+                if (!fromRemote) {
+                    syncChannel.postMessage({ action: 'deselect' });
+                }
+            } else {
+                selectedItem = { itemType, id };
+                if (!fromRemote) {
+                    syncChannel.postMessage({ action: 'select', itemType, id });
+                }
+            }
+
+            // Update DOM element styles
+            updateSelectionUI();
+        }
+        window.selectItem = selectItem;
+
+        function updateSelectionUI() {
+            // Remove selected class from all zones
+            document.querySelectorAll('.zone').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            // Remove selected class from all feed-items
+            document.querySelectorAll('.feed-item').forEach(el => {
+                el.classList.remove('selected');
+            });
+
+            if (selectedItem) {
+                const { itemType, id } = selectedItem;
+                if (itemType === 'zone') {
+                    const zoneEl = document.getElementById(`zone-${id}`);
+                    if (zoneEl) {
+                        zoneEl.classList.add('selected');
+                    }
+                    // Highlight reassignment or redirect item that matches the zone
+                    document.querySelectorAll(`.feed-item`).forEach(el => {
+                        const fromZone = el.getAttribute('data-from-zone');
+                        const toZone = el.getAttribute('data-to-zone');
+                        if (fromZone === id || toZone === id) {
+                            el.classList.add('selected');
+                        }
+                    });
+                } else if (itemType === 'bin') {
+                    // Highlight bin items in dustbin-list and priority-list
+                    const binElements = document.querySelectorAll(`[data-bin-id="${id}"]`);
+                    binElements.forEach(el => {
+                        el.classList.add('selected');
+                    });
+                }
+            }
+        }
+
+        // Listen for sync messages from the 3D visualizer
+        syncChannel.addEventListener('message', (event) => {
+            const { action, itemType, id } = event.data;
+            if (action === 'select') {
+                selectItem(itemType, id, true);
+            } else if (action === 'deselect') {
+                selectItem(null, null, true);
+            }
+        });
 
         // Listen for Zone updates to update Map
         onValue(ref(db, 'stadium_data/zones'), (snapshot) => {
@@ -378,6 +476,7 @@
                     el.style.borderColor = 'rgba(255,255,255,0.1)';
                 });
             }
+            updateSelectionUI();
         });
 
         // Listen for Bin updates
@@ -438,8 +537,10 @@
                     if(fill >= 80) { status = 'critical'; badgeClass = 'badge-red'; }
                     else if(fill >= 60) { status = 'warning'; badgeClass = 'badge-amber'; }
                     
+                    const isSelected = selectedItem && selectedItem.itemType === 'bin' && selectedItem.id === b.bin_id;
+                    
                     return `
-                    <div class="feed-item ${status}">
+                    <div class="feed-item ${status} ${isSelected ? 'selected' : ''}" data-bin-id="${b.bin_id}" onclick="selectItem('bin', '${b.bin_id}')">
                         <div class="item-header">
                             <span class="item-title">${b.bin_id} (${b.zone || b.zone_id || 'Unknown'})</span>
                             <span class="item-badge ${badgeClass}">${fill.toFixed(1)}%</span>
@@ -449,6 +550,7 @@
             } else {
                 binList.innerHTML = `<div class="empty-state">No active bins.</div>`;
             }
+            updateSelectionUI();
         }
 
         function renderAIRecommendations(data) {
@@ -475,8 +577,9 @@
             if(prioItems.length > 0) {
                 prioList.innerHTML = prioItems.map(p => {
                     const fillStr = typeof p.fill_level === 'number' ? p.fill_level.toFixed(1) : (parseFloat(p.fill_level) || 0).toFixed(1);
+                    const isSelected = selectedItem && selectedItem.itemType === 'bin' && selectedItem.id === p.bin_id;
                     return `
-                    <div class="feed-item ${p.status ? p.status.toLowerCase() : 'normal'}">
+                    <div class="feed-item ${p.status ? p.status.toLowerCase() : 'normal'} ${isSelected ? 'selected' : ''}" data-bin-id="${p.bin_id}" onclick="selectItem('bin', '${p.bin_id}')">
                         <div class="item-header">
                             <span class="item-title">${p.bin_id || 'Unknown'} (${p.zone || 'Unknown'})</span>
                             <span class="item-badge ${p.status === 'CRITICAL' ? 'badge-red' : 'badge-amber'}">${fillStr}%</span>
@@ -492,15 +595,22 @@
             const staffList = document.getElementById('staffing-list');
             const reass = staff.reassignments || [];
             if(reass.length > 0) {
-                staffList.innerHTML = reass.map(r => `
-                    <div class="feed-item normal" style="border-left-color: #3b82f6;">
+                staffList.innerHTML = reass.map(r => {
+                    const isFromSelected = selectedItem && selectedItem.itemType === 'zone' && selectedItem.id === r.from_zone;
+                    const isToSelected = selectedItem && selectedItem.itemType === 'zone' && selectedItem.id === r.to_zone;
+                    const isSelected = isFromSelected || isToSelected;
+                    return `
+                    <div class="feed-item normal ${isSelected ? 'selected' : ''}" style="border-left-color: #3b82f6;" data-from-zone="${r.from_zone}" data-to-zone="${r.to_zone}">
                         <div class="item-header">
                             <span class="item-title">${r.staff_name}</span>
-                            <span class="item-badge badge-blue">${r.from_zone} &rarr; ${r.to_zone}</span>
+                            <span class="item-badge badge-blue" onclick="event.stopPropagation(); selectItem('zone', '${r.from_zone}')">${r.from_zone}</span>
+                            &rarr;
+                            <span class="item-badge badge-blue" onclick="event.stopPropagation(); selectItem('zone', '${r.to_zone}')">${r.to_zone}</span>
                         </div>
                         <div class="item-desc"><strong>Task:</strong> ${r.task?.replace('_', ' ')} <br> ${r.reasoning}</div>
                     </div>
-                `).join('');
+                    `;
+                }).join('');
             } else {
                 staffList.innerHTML = `<div class="empty-state">No reassignments active.</div>`;
             }
@@ -509,17 +619,26 @@
             const redList = document.getElementById('redirects-list');
             const redirects = staff.crowd_redirects || [];
             if(redirects.length > 0) {
-                redList.innerHTML = redirects.map(r => `
-                    <div class="feed-item warning">
+                redList.innerHTML = redirects.map(r => {
+                    const isFromSelected = selectedItem && selectedItem.itemType === 'zone' && selectedItem.id === r.from_zone;
+                    const isToSelected = selectedItem && selectedItem.itemType === 'zone' && selectedItem.id === r.to_zone;
+                    const isSelected = isFromSelected || isToSelected;
+                    return `
+                    <div class="feed-item warning ${isSelected ? 'selected' : ''}" data-from-zone="${r.from_zone}" data-to-zone="${r.to_zone}">
                         <div class="item-header">
-                            <span class="item-title">${r.from_zone} &rarr; ${r.to_zone}</span>
+                            <span class="item-title">
+                                <span class="item-badge badge-amber" onclick="event.stopPropagation(); selectItem('zone', '${r.from_zone}')">${r.from_zone}</span>
+                                &rarr;
+                                <span class="item-badge badge-amber" onclick="event.stopPropagation(); selectItem('zone', '${r.to_zone}')">${r.to_zone}</span>
+                            </span>
                         </div>
                         <div class="item-desc">${r.reasoning}</div>
                     </div>
-                `).join('');
+                `;}).join('');
             } else {
                 redList.innerHTML = `<div class="empty-state">No active redirects.</div>`;
             }
+            updateSelectionUI();
         }
     </script>
 </body>

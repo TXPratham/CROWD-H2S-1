@@ -1,0 +1,24 @@
+<USER_REQUEST>
+I have a Three.js stadium scene (index.html) and a 2D dashboard (dashboard.html),
+both showing live bin and zone data from Firebase. I need to add bidirectional
+selection/highlighting between the data lists and the 3D scene.
+
+Requirements:
+
+1. POSITION MAPPING
+   Each bin and zone in my data already has a stadium/stand name (e.g.
+   "AT&T Stadium", "North Stand", "BC Place"). Create a lookup object that
+   maps each bin_id and zone_id to a fixed 3D coordinate (x, y, z) in the
+   scene, matching where that stand/section actually sits in my stadium
+   model. Store this as a JS object like:
+
+   const zonePositions = {
+     "North Stand": { x: 0, y: 20, z: -44 },
+     "South Stand": { x: 0, y: 20, z: 44 },
+     "East Stand": { x: 44, y: 20, z: 0 },
+     "West Stand": { x: -44, y: 20, z: 0 },
+     // add entries for every named stadium/stand in my data
+   };
+
+   Do the same for bin positions (bins can sit slightly offset from their
+<truncated 2642 bytes>
